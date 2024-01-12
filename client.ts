@@ -1,4 +1,6 @@
+import type { MBID } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
+import type { EntityType } from "./data/entity.ts";
 import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
 import { validate } from "https://deno.land/std@0.210.0/uuid/v4.ts";
@@ -32,7 +34,7 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup(entityType: string, mbid: string, inc: string[] = []) {
+  lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assert(validate(mbid), `${mbid} is not a valid MBID`);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
   }
