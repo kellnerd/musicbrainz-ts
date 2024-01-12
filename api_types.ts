@@ -1,3 +1,5 @@
+import type { ReleasePackaging, ReleaseStatus } from "./data/release.ts";
+
 /** MusicBrainz ID, a v4 UUID. */
 export type MBID = string;
 
@@ -75,12 +77,6 @@ export interface CoverArtArchiveInfo {
   /** Cover art for this release has been disabled by a rights holder. */
   darkened: boolean;
 }
-
-/** TODO */
-export type ReleasePackaging = "Cassette Case";
-
-/** TODO */
-export type ReleaseStatus = "Official" | "Bootleg";
 
 /** TODO */
 export type DataQuality = "normal" | "high";
