@@ -117,8 +117,17 @@ export interface Medium {
   "track-offset": number;
   format: string; // null?
   "format-id": MBID; // null?
-  discs?: []; // Disc IDs?
   tracks: Track[];
+}
+
+export interface DiscId {
+  /** Base64 encoded disc ID. */
+  id: string;
+  /** Total number of sectors. */
+  sectors: number;
+  "offset-count": number;
+  /** Offsets of the tracks in sectors. */
+  offsets: number[];
 }
 
 export interface Track {

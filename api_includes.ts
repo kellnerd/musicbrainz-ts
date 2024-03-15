@@ -1,6 +1,7 @@
 import type {
   Alias,
   ArtistCredit,
+  DiscId,
   LabelInfo,
   Medium,
   Release,
@@ -38,9 +39,16 @@ export const possibleReleaseIncludes = [
   "release-groups", // TODO
   "aliases",
   "artist-credits",
+  "discids",
 ] as const;
 
 export type ReleaseInclude = typeof possibleReleaseIncludes[number];
+
+export const possibleMediumIncludes = [
+  "discids",
+] as const;
+
+export type MediumInclude = typeof possibleMediumIncludes[number];
 
 export const possibleTrackIncludes = [
   "artist-credits",
@@ -55,6 +63,10 @@ interface ReleaseIncludeMap extends EntityIncludeMap<ReleaseInclude> {
   recordings: { key: "media"; type: Medium[] };
 }
 
+interface MediumIncludeMap extends EntityIncludeMap<MediumInclude> {
+  "discids": { key: "discs"; type: DiscId[] };
+}
+
 interface TrackIncludeMap extends EntityIncludeMap<TrackInclude> {
   "artist-credits": { key: "artist-credit"; type: ArtistCredit[] };
 }
@@ -63,6 +75,12 @@ export type ReleaseWith<Includes extends ReleaseInclude> = EntityWithIncludes<
   Release,
   Includes,
   ReleaseIncludeMap
+>;
+
+export type MediumWith<Includes extends MediumInclude> = EntityWithIncludes<
+  Medium,
+  Includes,
+  MediumIncludeMap
 >;
 
 export type TrackWith<Includes extends TrackInclude> = EntityWithIncludes<
