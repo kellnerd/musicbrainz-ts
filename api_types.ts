@@ -109,7 +109,6 @@ export interface Track {
   /** Track length in milliseconds (integer). */
   length: number;
   recording: Recording;
-  "artist-credit"?: ArtistCredit[]; // TODO: includes affects sub-queries
 }
 
 export interface ReleaseEvent {
