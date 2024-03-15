@@ -53,12 +53,10 @@ export class MusicBrainzClient {
       endpointUrl.search = new URLSearchParams(query as Query).toString();
     }
 
-    const response = await this.#request(
-      new Request(endpointUrl, {
-        method: "GET",
-        headers: this.#headers,
-      }),
-    );
+    const response = await this.#request(endpointUrl, {
+      method: "GET",
+      headers: this.#headers,
+    });
 
     const data = await response.json();
     if (isError(data)) {
@@ -76,13 +74,11 @@ export class MusicBrainzClient {
   // deno-lint-ignore no-explicit-any
   async post(endpoint: string, json: any): Promise<any> {
     const endpointUrl = new URL(endpoint, this.apiBaseUrl);
-    const response = await this.#request(
-      new Request(endpointUrl, {
-        method: "POST",
-        headers: this.#headers,
-        body: JSON.stringify(json),
-      }),
-    );
+    const response = await this.#request(endpointUrl, {
+      method: "POST",
+      headers: this.#headers,
+      body: JSON.stringify(json),
+    });
 
     const data = await response.json();
     if (isError(data)) {
@@ -92,10 +88,10 @@ export class MusicBrainzClient {
     }
   }
 
-  async #request(input: Request | URL): Promise<Response> {
+  async #request(url: URL, init?: RequestInit): Promise<Response> {
     await this.#rateLimitDelay;
 
-    const response = await fetch(input);
+    const response = await fetch(url, init);
 
     /** Number of API usage units remaining in the current time window. */
     const remainingUnits = response.headers.get("X-RateLimit-Remaining");
