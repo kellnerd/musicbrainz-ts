@@ -1,4 +1,9 @@
-import type { ReleaseInclude, ReleaseWith } from "./api_includes.ts";
+import type {
+  ArtistInclude,
+  ArtistWith,
+  ReleaseInclude,
+  ReleaseWith,
+} from "./api_includes.ts";
 import type { EntityBase, MBID } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { EntityType } from "./data/entity.ts";
@@ -35,13 +40,18 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
+  lookup<Include extends ArtistInclude = never>(
+    entityType: "artist",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<ArtistWith<Include>>;
   lookup<Include extends ReleaseInclude = never>(
     entityType: "release",
     mbid: MBID,
     inc?: Include[],
   ): Promise<ReleaseWith<Include>>;
   lookup(
-    entityType: Exclude<EntityType, "release">,
+    entityType: Exclude<EntityType, "artist" | "release">,
     mbid: MBID,
     inc?: string[],
   ): Promise<EntityBase>;

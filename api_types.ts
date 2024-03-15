@@ -1,3 +1,4 @@
+import type { ArtistType, Gender } from "./data/artist.ts";
 import type { ReleasePackaging, ReleaseStatus } from "./data/release.ts";
 
 /** MusicBrainz ID, a v4 UUID. */
@@ -21,6 +22,12 @@ export type IsoDate = string;
  * - ISO 3166-1 country code
  */
 export type Locale = string;
+
+export interface DatePeriod {
+  begin: IsoDate | null;
+  end: IsoDate | null;
+  ended: boolean;
+}
 
 /** Properties which all entity types have in common. */
 export interface EntityBase {
@@ -46,6 +53,16 @@ export interface Area extends MinimalEntity {
 }
 
 export interface Artist extends MinimalEntity {
+  type: ArtistType | null;
+  gender: Gender | null;
+  "gender-id": MBID | null;
+  area: Area | null;
+  country: IsoCountryCode;
+  "life-span": DatePeriod;
+  "begin-area": Area | null;
+  "end-area": Area | null;
+  ipis: string[];
+  isnis: string[];
 }
 
 export interface Label extends MinimalEntity {
@@ -58,7 +75,7 @@ export interface Recording extends EntityBase {
   disambiguation: string;
   /** Recording length in milliseconds (integer). */
   length: number;
-  "first-release-date": IsoDate;
+  "first-release-date": IsoDate | null;
   video: boolean;
   "artist-credit"?: ArtistCredit[]; // TODO: includes affects sub-queries
 }
@@ -91,21 +108,18 @@ export interface Release extends EntityBase {
 }
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
-export interface Alias<Type extends string = string> {
+export interface Alias<Type extends string = string> extends DatePeriod {
   name: string;
   "sort-name": string;
   type: Type | null;
   "type-id": MBID | null;
   locale: Locale | null;
   primary: boolean | null;
-  begin: IsoDate | null;
-  end: IsoDate | null;
-  ended: boolean;
 }
 
 export interface ArtistCredit {
   name: string;
-  artist: Artist;
+  artist: MinimalEntity;
   joinphrase: string;
 }
 
