@@ -47,20 +47,24 @@ export interface MinimalEntity extends EntityBase {
   "type-id": MBID | null;
 }
 
-export interface Area extends MinimalEntity {
+export interface MinimalArea extends MinimalEntity {
   /** ISO 3166-1 country codes, for countries only. */
   "iso-3166-1-codes"?: IsoCountryCode[]; // null?
+}
+
+export interface Area extends MinimalArea {
+  "life-span": DatePeriod;
 }
 
 export interface Artist extends MinimalEntity {
   type: ArtistType | null;
   gender: Gender | null;
   "gender-id": MBID | null;
-  area: Area | null;
+  area: MinimalArea | null;
   country: IsoCountryCode;
   "life-span": DatePeriod;
-  "begin-area": Area | null;
-  "end-area": Area | null;
+  "begin-area": MinimalArea | null;
+  "end-area": MinimalArea | null;
   ipis: string[];
   isnis: string[];
 }
@@ -156,7 +160,7 @@ export interface Track {
 
 export interface ReleaseEvent {
   date: IsoDate; // null?
-  area: Area; // null?
+  area: MinimalArea; // null?
 }
 
 export interface LabelInfo {

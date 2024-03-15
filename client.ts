@@ -1,4 +1,6 @@
 import type {
+  AreaInclude,
+  AreaWith,
   ArtistInclude,
   ArtistWith,
   ReleaseInclude,
@@ -40,6 +42,11 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
+  lookup<Include extends AreaInclude = never>(
+    entityType: "area",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<AreaWith<Include>>;
   lookup<Include extends ArtistInclude = never>(
     entityType: "artist",
     mbid: MBID,
