@@ -35,11 +35,11 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Includes extends ReleaseInclude[] = []>(
+  lookup<Include extends ReleaseInclude = never>(
     entityType: "release",
     mbid: MBID,
-    inc?: Includes,
-  ): Promise<ReleaseWith<Includes>>;
+    inc?: Include[],
+  ): Promise<ReleaseWith<Include>>;
   lookup(
     entityType: Exclude<EntityType, "release">,
     mbid: MBID,

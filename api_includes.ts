@@ -18,12 +18,14 @@ type EntityIncludeMap<Include extends IncludeParameter> = Record<
 /** Entity which includes data for the given include parameters. */
 type EntityWithIncludes<
   Entity extends object,
-  Includes extends IncludeParameter[],
-  IncludeMap extends EntityIncludeMap<Includes[number]>,
+  Includes extends IncludeParameter,
+  IncludeMap extends EntityIncludeMap<Includes>,
 > =
   & Entity
   & {
-    [Include in Includes[number] as IncludeMap[Include]["key"]]:
+    // Map each possible value of Includes to its corresponding property key.
+    [Include in Includes as IncludeMap[Include]["key"]]:
+      // Map the include value to the type of the corresponding property value.
       IncludeMap[Include]["type"];
   };
 
@@ -54,8 +56,14 @@ interface TrackIncludeMap extends EntityIncludeMap<TrackInclude> {
   "artist-credits": { key: "artist-credit"; type: ArtistCredit[] };
 }
 
-export type ReleaseWith<Includes extends ReleaseInclude[] = []> =
-  EntityWithIncludes<Release, Includes, ReleaseIncludeMap>;
+export type ReleaseWith<Includes extends ReleaseInclude> = EntityWithIncludes<
+  Release,
+  Includes,
+  ReleaseIncludeMap
+>;
 
-export type TrackWith<Includes extends TrackInclude[] = []> =
-  EntityWithIncludes<Track, Includes, TrackIncludeMap>;
+export type TrackWith<Includes extends TrackInclude> = EntityWithIncludes<
+  Track,
+  Includes,
+  TrackIncludeMap
+>;
