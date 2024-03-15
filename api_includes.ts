@@ -1,4 +1,5 @@
 import type {
+  Alias,
   ArtistCredit,
   LabelInfo,
   Medium,
@@ -35,6 +36,7 @@ export const possibleReleaseIncludes = [
   "labels",
   "recordings",
   "release-groups", // TODO
+  "aliases",
   "artist-credits",
 ] as const;
 
@@ -47,6 +49,7 @@ export const possibleTrackIncludes = [
 export type TrackInclude = typeof possibleTrackIncludes[number];
 
 interface ReleaseIncludeMap extends EntityIncludeMap<ReleaseInclude> {
+  aliases: { key: "aliases"; type: Alias[] };
   "artist-credits": { key: "artist-credit"; type: ArtistCredit[] };
   labels: { key: "label-info"; type: LabelInfo[] };
   recordings: { key: "media"; type: Medium[] };

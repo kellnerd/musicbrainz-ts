@@ -6,7 +6,7 @@ export type MBID = string;
 /** ISO 3166-1 (two letter) code of a country. */
 export type IsoCountryCode = string;
 
-/** ISO (three letter) code of a language. */
+/** ISO 639 (three letter) code of a language. */
 export type IsoLanguageCode = string;
 
 /** ISO (four letter) code of a script. */
@@ -14,6 +14,13 @@ export type IsoScriptCode = string;
 
 /** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM-DD` or `YYYY`). */
 export type IsoDate = string;
+
+/**
+ * Language and optional territory and/or variant, separated by underscores:
+ * - ISO 639 (two or three letters) language code
+ * - ISO 3166-1 country code
+ */
+export type Locale = string;
 
 /** Properties which all entity types have in common. */
 export interface EntityBase {
@@ -81,6 +88,19 @@ export interface Release extends EntityBase {
   /** Amazon ASIN. */
   asin: string | null;
   "cover-art-archive": CoverArtArchiveInfo; // null?
+}
+
+// TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
+export interface Alias<Type extends string = string> {
+  name: string;
+  "sort-name": string;
+  type: Type | null;
+  "type-id": MBID | null;
+  locale: Locale | null;
+  primary: boolean | null;
+  begin: IsoDate | null;
+  end: IsoDate | null;
+  ended: boolean;
 }
 
 export interface ArtistCredit {
