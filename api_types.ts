@@ -81,7 +81,6 @@ export interface Recording extends EntityBase {
   length: number;
   "first-release-date": IsoDate | null;
   video: boolean;
-  "artist-credit"?: ArtistCredit[]; // TODO: includes affects sub-queries
 }
 
 export interface Release extends EntityBase {

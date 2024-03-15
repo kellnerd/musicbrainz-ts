@@ -3,6 +3,8 @@ import type {
   AreaWith,
   ArtistInclude,
   ArtistWith,
+  RecordingInclude,
+  RecordingWith,
   ReleaseInclude,
   ReleaseWith,
 } from "./api_includes.ts";
@@ -52,13 +54,21 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<ArtistWith<Include>>;
+  lookup<Include extends RecordingInclude = never>(
+    entityType: "recording",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<RecordingWith<Include>>;
   lookup<Include extends ReleaseInclude = never>(
     entityType: "release",
     mbid: MBID,
     inc?: Include[],
   ): Promise<ReleaseWith<Include>>;
   lookup(
-    entityType: Exclude<EntityType, "artist" | "release">,
+    entityType: Exclude<
+      EntityType,
+      "area" | "artist" | "recording" | "release"
+    >,
     mbid: MBID,
     inc?: string[],
   ): Promise<EntityBase>;

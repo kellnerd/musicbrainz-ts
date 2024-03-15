@@ -6,6 +6,7 @@ import type {
   DiscId,
   LabelInfo,
   Medium,
+  Recording,
   Release,
   Track,
 } from "./api_types.ts";
@@ -84,6 +85,17 @@ export const possibleArtistIncludes = [
 
 export type ArtistInclude = typeof possibleArtistIncludes[number];
 
+export const possibleRecordingIncludes = [
+  "artists", // TODO
+  "releases", // TODO
+  "release-groups", // TODO
+  "isrcs", // TODO
+  "artist-credits",
+  ...miscIncludes,
+] as const;
+
+export type RecordingInclude = typeof possibleRecordingIncludes[number];
+
 export const possibleReleaseIncludes = [
   "artists", // TODO
   "collections", // TODO
@@ -117,6 +129,11 @@ interface ArtistIncludeMap extends EntityIncludeMap<ArtistInclude> {
   aliases: { key: "aliases"; type: Alias[] };
 }
 
+interface RecordingIncludeMap extends EntityIncludeMap<RecordingInclude> {
+  aliases: { key: "aliases"; type: Alias[] };
+  "artist-credits": { key: "artist-credit"; type: ArtistCredit[] };
+}
+
 interface ReleaseIncludeMap extends EntityIncludeMap<ReleaseInclude> {
   aliases: { key: "aliases"; type: Alias[] };
   "artist-credits": { key: "artist-credit"; type: ArtistCredit[] };
@@ -143,6 +160,13 @@ export type ArtistWith<Includes extends ArtistInclude> = EntityWithIncludes<
   Includes,
   ArtistIncludeMap
 >;
+
+export type RecordingWith<Includes extends RecordingInclude> =
+  EntityWithIncludes<
+    Recording,
+    Includes,
+    RecordingIncludeMap
+  >;
 
 export type ReleaseWith<Includes extends ReleaseInclude> = EntityWithIncludes<
   Release,
