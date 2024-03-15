@@ -1,7 +1,7 @@
 import type { ArtistType, Gender } from "./data/artist.ts";
 import type { ReleasePackaging, ReleaseStatus } from "./data/release.ts";
 
-/** MusicBrainz ID, a v4 UUID. */
+/** MusicBrainz ID, a UUID (usually v4). */
 export type MBID = string;
 
 /** ISO 3166-1 (two letter) code of a country. */

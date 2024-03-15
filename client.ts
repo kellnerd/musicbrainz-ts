@@ -11,7 +11,7 @@ import { ApiError, isError } from "./error.ts";
 import type { EntityType } from "./data/entity.ts";
 import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
-import { validate } from "https://deno.land/std@0.210.0/uuid/v4.ts";
+import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
