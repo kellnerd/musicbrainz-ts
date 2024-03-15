@@ -1,4 +1,5 @@
-import type { MBID } from "./api_types.ts";
+import type { ReleaseInclude, ReleaseWith } from "./api_includes.ts";
+import type { EntityBase, MBID } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { EntityType } from "./data/entity.ts";
 import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
@@ -34,6 +35,16 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
+  lookup<Includes extends ReleaseInclude[] = []>(
+    entityType: "release",
+    mbid: MBID,
+    inc?: Includes,
+  ): Promise<ReleaseWith<Includes>>;
+  lookup(
+    entityType: Exclude<EntityType, "release">,
+    mbid: MBID,
+    inc?: string[],
+  ): Promise<EntityBase>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assert(validate(mbid), `${mbid} is not a valid MBID`);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });

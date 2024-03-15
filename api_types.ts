@@ -21,17 +21,39 @@ export interface EntityBase {
   id: MBID;
 }
 
-export interface Area extends EntityBase {
-  /** Name of the area. */
+/** Properties which many entity types have in common. */
+export interface MinimalEntity extends EntityBase {
+  /** Name of the entity. */
   name: string;
-  /** Sort name of the area. */
+  /** Sort name of the entity. */
   "sort-name": string;
-	/** ISO 3166-1 country codes, for countries only. */
-  "iso-3166-1-codes"?: IsoCountryCode[]; // null?
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   type: string | null;
   "type-id": MBID | null;
+}
+
+export interface Area extends MinimalEntity {
+  /** ISO 3166-1 country codes, for countries only. */
+  "iso-3166-1-codes"?: IsoCountryCode[]; // null?
+}
+
+export interface Artist extends MinimalEntity {
+}
+
+export interface Label extends MinimalEntity {
+  "label-code": number | null;
+}
+
+export interface Recording extends EntityBase {
+  title: string;
+  /** Disambiguation comment, can be empty. */
+  disambiguation: string;
+  /** Recording length in milliseconds (integer). */
+  length: number;
+  "first-release-date": IsoDate;
+  video: boolean;
+  "artist-credit"?: ArtistCredit[]; // TODO: includes affects sub-queries
 }
 
 export interface Release extends EntityBase {
@@ -41,9 +63,10 @@ export interface Release extends EntityBase {
   disambiguation: string;
   date: IsoDate; // null?
   country: IsoCountryCode; // null?
-	/** Release dates and areas. */
+  /** Release dates and areas. */
   "release-events": ReleaseEvent[]; // null?
-  barcode: string | null;
+  /** Barcode of the release, can be empty. */
+  barcode: string;
   packaging: ReleasePackaging | null;
   "packaging-id": MBID | null;
   status: ReleaseStatus; // null?
@@ -60,9 +83,43 @@ export interface Release extends EntityBase {
   "cover-art-archive": CoverArtArchiveInfo; // null?
 }
 
+export interface ArtistCredit {
+  name: string;
+  artist: Artist;
+  joinphrase: string;
+}
+
+export interface Medium {
+  position: number;
+  /** Medium title, can be empty. */
+  title: string;
+  "track-count": number;
+  "track-offset": number;
+  format: string; // null?
+  "format-id": MBID; // null?
+  discs?: []; // Disc IDs?
+  tracks: Track[];
+}
+
+export interface Track {
+  id: MBID;
+  position: number;
+  number: string;
+  title: string;
+  /** Track length in milliseconds (integer). */
+  length: number;
+  recording: Recording;
+  "artist-credit"?: ArtistCredit[]; // TODO: includes affects sub-queries
+}
+
 export interface ReleaseEvent {
   date: IsoDate; // null?
   area: Area; // null?
+}
+
+export interface LabelInfo {
+  label: Label;
+  "catalog-number": string | null;
 }
 
 export interface CoverArtArchiveInfo {
