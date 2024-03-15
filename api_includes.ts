@@ -9,6 +9,7 @@ import type {
   Release,
   Track,
 } from "./api_types.ts";
+import { type EntityType, entityTypes } from "./data/entity.ts";
 
 /** Include parameter which requests more data about an entity. */
 type IncludeParameter = string;
@@ -33,8 +34,35 @@ type EntityWithIncludes<
       IncludeMap[Include]["type"];
   };
 
+/** Miscellaneous includes which can be used for (almost) all entity types. */
 export const miscIncludes = [
   "aliases",
+  "annotation",
+  "tags",
+  "genres",
+  "ratings",
+  // Tags/genres/ratings submitted by the specified user
+  "user-tags",
+  "user-genres",
+  "user-ratings",
+] as const;
+
+// TODO: Filter genre (and maybe others?)
+/** Load relationships between the requested entity and the specific entity type. */
+export const relIncludes = entityTypes.map((type) => `${type}-rels`);
+
+export type RelIncludes = `${EntityType}-rels`;
+
+// TODO: Use values below once all include map types are complete
+/** How much of the data about the linked entities should be included. */
+export const subQueryIncludes = [
+  // Disc IDs for all media
+  "discids",
+  // Media for all releases (number of tracks and format)
+  "media",
+  // ISRCs for all recordings
+  "isrcs",
+  "artist-credits",
 ] as const;
 
 export const possibleAreaIncludes = [
@@ -49,6 +77,9 @@ export const possibleArtistIncludes = [
   "release-groups", // TODO
   "works", // TODO
   ...miscIncludes,
+  // Include only those releases where the artist appears on one of the tracks,
+  // but not in the artist credit for the release itself.
+  "various-artists",
 ] as const;
 
 export type ArtistInclude = typeof possibleArtistIncludes[number];
