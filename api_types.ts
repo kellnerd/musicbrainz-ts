@@ -29,6 +29,31 @@ export interface DatePeriod {
   ended: boolean;
 }
 
+/**
+ * Optional sub-query which requests more information to be included.
+ * Data is only present in API responses if the include parameter is specified.
+ */
+type SubQuery<Data, Include extends string> = {
+  readonly __inc__: Include;
+  readonly __data__: Data;
+};
+
+/** Object with additional information for the given include parameters. */
+type WithIncludes<T, Include extends string = never> =
+  // Leave scalar values alone.
+  T extends string | number | boolean ? T : {
+    // Recursively obtain includes for all properties of the record or array.
+    [Property in keyof T]: WithIncludes<
+      // Detect values which are SubQuery wrappers.
+      T[Property] extends SubQuery<infer Data, infer RequiredInclude>
+        // Unwrap sub-query data if the required include parameter is given.
+        ? RequiredInclude extends Include ? Data : undefined
+        // Pass through normal values.
+        : T[Property],
+      Include
+    >;
+  };
+
 /** Properties which all entity types have in common. */
 export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
@@ -75,6 +100,7 @@ export interface Label extends MinimalEntity {
 
 export interface Recording extends EntityBase {
   title: string;
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   /** Recording length in milliseconds (integer). */
@@ -86,6 +112,7 @@ export interface Recording extends EntityBase {
 export interface Release extends EntityBase {
   /** Title of the release. */
   title: string;
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   date: IsoDate; // null?
