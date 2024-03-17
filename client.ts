@@ -65,10 +65,7 @@ export class MusicBrainzClient {
     inc?: Include[],
   ): Promise<ReleaseWith<Include>>;
   lookup(
-    entityType: Exclude<
-      EntityType,
-      "area" | "artist" | "recording" | "release"
-    >,
+    entityType: EntityType,
     mbid: MBID,
     inc?: string[],
   ): Promise<EntityBase>;

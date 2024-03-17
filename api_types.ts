@@ -39,9 +39,9 @@ type SubQuery<Data, Include extends string> = {
 };
 
 /** Object with additional information for the given include parameters. */
-type WithIncludes<T, Include extends string = never> =
+export type WithIncludes<T, Include extends string = never> =
   // Leave scalar values alone.
-  T extends string | number | boolean ? T : {
+  T extends string | number | boolean | null ? T : {
     // Recursively obtain includes for all properties of the record or array.
     [Property in keyof T]: WithIncludes<
       // Detect values which are SubQuery wrappers.
