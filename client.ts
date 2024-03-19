@@ -5,11 +5,21 @@ import type {
   Area,
   Artist,
   CollectIncludes,
+  Collection,
   EntityBase,
+  Genre,
+  Instrument,
+  Label,
   MBID,
+  MusicEvent,
+  Place,
   Recording,
   Release,
+  ReleaseGroup,
+  Series,
+  Url,
   WithIncludes,
+  Work,
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { EntityType } from "./data/entity.ts";
@@ -53,6 +63,36 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<WithIncludes<Artist, Include>>;
+  lookup<Include extends CollectIncludes<Collection> = never>(
+    entityType: "collection",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Collection, Include>>;
+  lookup<Include extends CollectIncludes<MusicEvent> = never>(
+    entityType: "event",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<MusicEvent, Include>>;
+  lookup<Include extends CollectIncludes<Genre> = never>(
+    entityType: "genre",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Genre, Include>>;
+  lookup<Include extends CollectIncludes<Instrument> = never>(
+    entityType: "instrument",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Instrument, Include>>;
+  lookup<Include extends CollectIncludes<Label> = never>(
+    entityType: "label",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Label, Include>>;
+  lookup<Include extends CollectIncludes<Place> = never>(
+    entityType: "place",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Place, Include>>;
   lookup<Include extends CollectIncludes<Recording> = never>(
     entityType: "recording",
     mbid: MBID,
@@ -63,18 +103,28 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<WithIncludes<Release, Include>>;
+  lookup<Include extends CollectIncludes<ReleaseGroup> = never>(
+    entityType: "release-group",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<ReleaseGroup, Include>>;
+  lookup<Include extends CollectIncludes<Series> = never>(
+    entityType: "series",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Series, Include>>;
+  lookup<Include extends CollectIncludes<Url> = never>(
+    entityType: "url",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Url, Include>>;
+  lookup<Include extends CollectIncludes<Work> = never>(
+    entityType: "work",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<WithIncludes<Work, Include>>;
   lookup(
-    entityType:
-      | "event"
-      | "collection"
-      | "genre"
-      | "instrument"
-      | "label"
-      | "place"
-      | "release-group"
-      | "series"
-      | "url"
-      | "work",
+    entityType: EntityType,
     mbid: MBID,
     inc?: string[],
   ): Promise<EntityBase>;

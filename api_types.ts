@@ -38,9 +38,8 @@ export interface DatePeriod {
   ended: boolean;
 }
 
-/**
- * Include parameters can be specified to request more information from the API. */
-type IncludeParameter = string;
+/** Include parameters can be specified to request more information from the API. */
+export type IncludeParameter = string;
 
 /**
  * Helper type to mark a property of an entity as optional sub-query.
@@ -132,7 +131,7 @@ export type EntityTypeMap = {
   area: Area;
   artist: Artist;
   collection: Collection;
-  event: Event;
+  event: MusicEvent;
   genre: Genre;
   instrument: Instrument;
   label: Label;
@@ -241,7 +240,7 @@ export interface MinimalEvent extends MinimalEntity {
   cancelled: boolean;
 }
 
-export interface Event extends MinimalEvent {
+export interface MusicEvent extends MinimalEvent {
   "life-span": DatePeriod;
 }
 
