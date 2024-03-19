@@ -280,7 +280,7 @@ export interface Place extends MinimalEntity {
   } | null;
 }
 
-interface CommonRecording extends EntityBase {
+export interface MinimalRecording extends EntityBase {
   title: string;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
@@ -288,14 +288,10 @@ interface CommonRecording extends EntityBase {
   length: number;
   "first-release-date"?: IsoDate;
   video: boolean;
-}
-
-export interface MinimalRecording extends CommonRecording {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
 }
 
-export interface Recording extends CommonRecording {
-  "artist-credit": ArtistCredit[]; // always present at top-level
+export interface Recording extends MinimalRecording {
   isrcs: SubQuery<string[], "isrcs">;
   releases: SubQuery<MinimalRelease, "releases">;
 }
