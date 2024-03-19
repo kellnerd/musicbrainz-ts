@@ -55,7 +55,11 @@ if (import.meta.main) {
   const newTestCases = Deno.args.map(convertApiUrlToTestCase).filter(isDefined);
   const append = Boolean(newTestCases.length);
   const outputPath = resolve(import.meta.dirname!, "./data/lookup.ts");
-  const output = await Deno.open(outputPath, { write: true, append });
+  const output = await Deno.open(outputPath, {
+    write: true,
+    append,
+    truncate: !append,
+  });
 
   if (append) {
     for (const testCase of newTestCases) {
