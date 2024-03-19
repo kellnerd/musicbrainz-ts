@@ -2,5 +2,9 @@
   "imports": {
     "@/": "./"
   },
-  "lock": false
+  "lock": false,
+  "tasks": {
+    "load-testdata": "deno run --allow-net=musicbrainz.org --allow-write=test/data/ test/download_testdata.ts",
+    "test-types": "deno check test/data/*.ts"
+  }
 }
