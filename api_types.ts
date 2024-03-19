@@ -306,7 +306,7 @@ interface CommonRelease extends EntityBase {
   /** Release dates and areas. */
   "release-events": ReleaseEvent[]; // null?
   /** Barcode of the release, can be empty. */
-  barcode: string;
+  barcode: string | null;
   packaging: ReleasePackaging | null;
   "packaging-id": MBID | null;
   status: ReleaseStatus | null;
