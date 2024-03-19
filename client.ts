@@ -1,19 +1,18 @@
-import type {
-  AreaInclude,
-  AreaWith,
-  ArtistInclude,
-  ArtistWith,
-  RecordingInclude,
-  RecordingWith,
-  ReleaseInclude,
-  ReleaseWith,
-} from "./api_includes.ts";
-import type { EntityBase, MBID } from "./api_types.ts";
-import { ApiError, isError } from "./error.ts";
-import type { EntityType } from "./data/entity.ts";
 import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
 import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
+import type {
+  Area,
+  Artist,
+  CollectIncludes,
+  EntityBase,
+  MBID,
+  Recording,
+  Release,
+  WithIncludes,
+} from "./api_types.ts";
+import { ApiError, isError } from "./error.ts";
+import type { EntityType } from "./data/entity.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
@@ -44,28 +43,38 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Include extends AreaInclude = never>(
+  lookup<Include extends CollectIncludes<Area> = never>(
     entityType: "area",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<AreaWith<Include>>;
-  lookup<Include extends ArtistInclude = never>(
+  ): Promise<WithIncludes<Area, Include>>;
+  lookup<Include extends CollectIncludes<Artist> = never>(
     entityType: "artist",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<ArtistWith<Include>>;
-  lookup<Include extends RecordingInclude = never>(
+  ): Promise<WithIncludes<Artist, Include>>;
+  lookup<Include extends CollectIncludes<Recording> = never>(
     entityType: "recording",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<RecordingWith<Include>>;
-  lookup<Include extends ReleaseInclude = never>(
+  ): Promise<WithIncludes<Recording, Include>>;
+  lookup<Include extends CollectIncludes<Release> = never>(
     entityType: "release",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<ReleaseWith<Include>>;
+  ): Promise<WithIncludes<Release, Include>>;
   lookup(
-    entityType: EntityType,
+    entityType:
+      | "event"
+      | "collection"
+      | "genre"
+      | "instrument"
+      | "label"
+      | "place"
+      | "release-group"
+      | "series"
+      | "url"
+      | "work",
     mbid: MBID,
     inc?: string[],
   ): Promise<EntityBase>;

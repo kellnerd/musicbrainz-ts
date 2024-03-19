@@ -107,20 +107,24 @@ type CollectSubQueryIncludes<Data> =
  * Recursively collects {@linkcode IncludeParameter} values which affect the
  * presence of sub-query properties from the given entity type and its children.
  */
-export type CollectIncludes<Entity extends object> = {
-  [Key in keyof Entity]:
-    // Check if the value is a sub-query and infer its data and include type.
-    Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
-      // Return the includes of the sub-query and collect those from its data.
-      ? (RequiredInclude | CollectSubQueryIncludes<Data>)
-      // Collect includes from all regular child properties.
-      : CollectSubQueryIncludes<Entity[Key]>;
-}[StringKeyOf<Entity>]; // Lookup the collected include value of each property.
+export type CollectIncludes<Entity extends object> = Exclude<
+  {
+    [Key in keyof Entity]:
+      // Check if the value is a sub-query and infer its data and include type.
+      Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+        // Return the includes of the sub-query and collect those from its data.
+        ? (RequiredInclude | CollectSubQueryIncludes<Data>)
+        // Collect includes from all regular child properties.
+        : CollectSubQueryIncludes<Entity[Key]>;
+  }[StringKeyOf<Entity>], // Lookup the collected include value of each property.
+  undefined // TODO: Somehow optional props ("iso-3166-1-codes") add undefined to the type
+>;
 
 /** Properties which all entity types have in common. */
 export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
+  aliases: SubQuery<Alias[], "aliases">;
 }
 
 /** Properties which many entity types have in common. */
@@ -184,6 +188,7 @@ export interface Release extends EntityBase {
   "release-events": ReleaseEvent[]; // null?
   /** Barcode of the release, can be empty. */
   barcode: string;
+  "label-info": SubQuery<LabelInfo[], "labels">;
   packaging: ReleasePackaging | null;
   "packaging-id": MBID | null;
   status: ReleaseStatus; // null?
