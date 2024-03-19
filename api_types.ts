@@ -30,29 +30,66 @@ export interface DatePeriod {
 }
 
 /**
- * Optional sub-query which requests more information to be included.
- * Data is only present in API responses if the include parameter is specified.
+ * Include parameters can be specified to request more information from the API. */
+type IncludeParameter = string;
+
+/**
+ * Helper type to mark a property of an entity as optional sub-query.
+ * The additional {@linkcode Data} from a sub-query is only present in API
+ * responses if the {@linkcode RequiredInclude} parameter is specified.
  */
-type SubQuery<Data, Include extends string> = {
-  readonly __inc__: Include;
+type SubQuery<
+  Data extends object | object[],
+  RequiredInclude extends IncludeParameter,
+> = {
+  readonly __inc__: RequiredInclude;
   readonly __data__: Data;
 };
 
-/** Object with additional information for the given include parameters. */
-export type WithIncludes<T, Include extends string = never> =
-  // Leave scalar values alone.
-  T extends string | number | boolean | null ? T : {
-    // Recursively obtain includes for all properties of the record or array.
-    [Property in keyof T]: WithIncludes<
-      // Detect values which are SubQuery wrappers.
-      T[Property] extends SubQuery<infer Data, infer RequiredInclude>
-        // Unwrap sub-query data if the required include parameter is given.
-        ? RequiredInclude extends Include ? Data : undefined
-        // Pass through normal values.
-        : T[Property],
-      Include
-    >;
-  };
+/**
+ * Resolves to {@linkcode Key} unless {@linkcode Value} is a {@linkcode SubQuery}
+ * for which the required {@linkcode Include} is not specified.
+ * In that case it resolves to `never` which can be used to omit the key.
+ */
+type ShouldKeyBePresent<
+  Value,
+  Include extends IncludeParameter,
+  Key,
+> = Value extends SubQuery<infer _Data, infer RequiredInclude>
+  ? RequiredInclude extends Include ? Key : never
+  : Key;
+
+/**
+ * Applies the sub-query data unwrapping algorithm to the given data.
+ * Each item of a data array has to be unwrapped individually.
+ */
+type UnwrapSubQuery<
+  Data extends object | object[],
+  Include extends IncludeParameter,
+> = Data extends Array<infer Item extends object>
+  ? WithIncludes<Item, Include>[]
+  : WithIncludes<Data, Include>;
+
+/**
+ * Entity with additional information for the given include parameters.
+ *
+ * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
+ * the required {@linkcode Include} parameters have been specified and removes
+ * all sub-queries for which this is not the case.
+ * Regular properties of the entity are left alone (passed through).
+ *
+ * - Pass `never` as {@linkcode Include} to omit all sub-queries.
+ * - Pass {@linkcode IncludeParameter} to include all sub-queries.
+ */
+export type WithIncludes<
+  Entity extends object,
+  Include extends IncludeParameter,
+> = {
+  [Key in keyof Entity as ShouldKeyBePresent<Entity[Key], Include, Key>]:
+    Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+      ? RequiredInclude extends Include ? UnwrapSubQuery<Data, Include> : never
+      : Entity[Key];
+};
 
 /** Properties which all entity types have in common. */
 export interface EntityBase {
@@ -130,6 +167,7 @@ export interface Release extends EntityBase {
     language: IsoLanguageCode; // null?
     script: IsoScriptCode; // null?
   };
+  media: SubQuery<Medium[], "recordings">;
   /** Data quality rating. */
   quality: DataQuality; // null?
   /** Amazon ASIN. */
@@ -162,6 +200,7 @@ export interface Medium {
   format: string; // null?
   "format-id": MBID; // null?
   tracks: Track[];
+  discs: SubQuery<DiscId[], "discids">;
 }
 
 export interface DiscId {
@@ -179,6 +218,7 @@ export interface Track {
   position: number;
   number: string;
   title: string;
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number;
   recording: Recording;
