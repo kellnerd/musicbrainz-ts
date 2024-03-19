@@ -59,10 +59,7 @@ type ShouldKeyBePresent<
   ? RequiredInclude extends Include ? Key : never
   : Key;
 
-/**
- * Applies the sub-query data unwrapping algorithm to all objects from the given
- * data and leaves scalar values alone (they are passed through).
- */
+/** Applies the sub-query data unwrapping for all objects from the given data. */
 type UnwrapSubQuery<Data, Include extends IncludeParameter> =
   // Each item of a data array has to be unwrapped individually.
   Data extends Array<infer Item extends object> ? WithIncludes<Item, Include>[]
@@ -71,7 +68,7 @@ type UnwrapSubQuery<Data, Include extends IncludeParameter> =
     : Data;
 
 /**
- * Entity with additional information for the given include parameters.
+ * {@linkcode Entity} with additional information for the given include parameters.
  *
  * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
  * the required {@linkcode Include} parameters have been specified and removes
@@ -93,6 +90,32 @@ export type WithIncludes<
       // Always unwrap regular properties to find nested sub-queries.
       : UnwrapSubQuery<Entity[Key], Include>;
 };
+
+type StringKeyOf<T> = keyof T extends string ? keyof T : never;
+
+/** Collects sub-query include parameters from all objects of the given data. */
+type CollectSubQueryIncludes<Data> =
+  // Collect includes of the items of a data array instead of the array itself.
+  Data extends Array<infer Item extends object> ? CollectIncludes<Item>
+    : Data extends object ? CollectIncludes<Data>
+    // Leave scalar values alone, there is nothing to collect.
+    : never;
+
+/**
+ * All possible include parameter values for the given {@linkcode Entity}.
+ *
+ * Recursively collects {@linkcode IncludeParameter} values which affect the
+ * presence of sub-query properties from the given entity type and its children.
+ */
+export type CollectIncludes<Entity extends object> = {
+  [Key in keyof Entity]:
+    // Check if the value is a sub-query and infer its data and include type.
+    Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+      // Return the includes of the sub-query and collect those from its data.
+      ? (RequiredInclude | CollectSubQueryIncludes<Data>)
+      // Collect includes from all regular child properties.
+      : CollectSubQueryIncludes<Entity[Key]>;
+}[StringKeyOf<Entity>]; // Lookup the collected include value of each property.
 
 /** Properties which all entity types have in common. */
 export interface EntityBase {
