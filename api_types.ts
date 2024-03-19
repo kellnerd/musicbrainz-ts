@@ -1,10 +1,19 @@
 import type { ArtistType, Gender } from "./data/artist.ts";
-import type { ReleasePackaging, ReleaseStatus } from "./data/release.ts";
+import type { EntityPlural, EntityType } from "./data/entity.ts";
+import type {
+  DataQuality,
+  ReleasePackaging,
+  ReleaseStatus,
+} from "./data/release.ts";
+import type {
+  ReleaseGroupPrimaryType,
+  ReleaseGroupSecondaryType,
+} from "./data/release_group.ts";
 
 /** MusicBrainz ID, a UUID (usually v4). */
 export type MBID = string;
 
-/** ISO 3166-1 (two letter) code of a country. */
+/** ISO 3166-1 (two letter), 3166-2 or 3166-3 (three letter) code of a country. */
 export type IsoCountryCode = string;
 
 /** ISO 639 (three letter) code of a language. */
@@ -38,10 +47,7 @@ type IncludeParameter = string;
  * The additional {@linkcode Data} from a sub-query is only present in API
  * responses if the {@linkcode RequiredInclude} parameter is specified.
  */
-type SubQuery<
-  Data extends object | object[],
-  RequiredInclude extends IncludeParameter,
-> = {
+type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
   readonly __inc__: RequiredInclude;
   readonly __data__: Data;
 };
@@ -121,19 +127,54 @@ export type CollectIncludes<Entity extends object> = Exclude<
   undefined // Optional entity properties will add `undefined` to the type.
 >;
 
+/** Maps entity type names to their type definitions. */
+export type EntityTypeMap = {
+  area: Area;
+  artist: Artist;
+  collection: Collection;
+  event: Event;
+  genre: Genre;
+  instrument: Instrument;
+  label: Label;
+  place: Place;
+  recording: Recording;
+  release: Release;
+  "release-group": ReleaseGroup;
+  series: Series;
+  work: Work;
+  url: Url;
+};
+
+/** Maps entity type names to their minimal type definitions (for sub-queries). */
+export type MinimalEntityTypeMap = {
+  area: MinimalArea;
+  artist: MinimalArtist;
+  collection: never;
+  event: MinimalEvent;
+  genre: Genre;
+  instrument: Instrument;
+  label: MinimalLabel;
+  place: Place;
+  recording: MinimalRecording;
+  release: MinimalRelease;
+  "release-group": ReleaseGroup;
+  series: Series;
+  work: Work;
+  url: Url;
+};
+
 /** Properties which all entity types have in common. */
 export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
   aliases: SubQuery<Alias[], "aliases">;
+  annotation: SubQuery<string | null, "annotation">;
 }
 
 /** Properties which many entity types have in common. */
 export interface MinimalEntity extends EntityBase {
   /** Name of the entity. */
   name: string;
-  /** Sort name of the entity. */
-  "sort-name": string;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   type: string | null;
@@ -141,70 +182,199 @@ export interface MinimalEntity extends EntityBase {
 }
 
 export interface MinimalArea extends MinimalEntity {
+  /** Sort name of the entity. */
+  "sort-name": string;
   /** ISO 3166-1 country codes, for countries only. */
-  "iso-3166-1-codes"?: IsoCountryCode[]; // null?
+  "iso-3166-1-codes"?: IsoCountryCode[];
+  "iso-3166-2-codes"?: IsoCountryCode[];
+  "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
 export interface Area extends MinimalArea {
   "life-span": DatePeriod;
 }
 
-export interface Artist extends MinimalEntity {
-  type: ArtistType | null;
+export interface MinimalArtist extends MinimalEntity {
+  /** Sort name of the entity. */
+  "sort-name": string;
+}
+
+export interface Artist extends MinimalArtist {
+  type: ArtistType | null; // override
   gender: Gender | null;
   "gender-id": MBID | null;
   area: MinimalArea | null;
-  country: IsoCountryCode;
+  country: IsoCountryCode | null;
   "life-span": DatePeriod;
   "begin-area": MinimalArea | null;
   "end-area": MinimalArea | null;
   ipis: string[];
   isnis: string[];
+  recordings: SubQuery<MinimalRecording[], "recordings">;
+  releases: SubQuery<MinimalRelease[], "releases">;
+  "release-groups": SubQuery<ReleaseGroup[], "release-groups">;
+  works: SubQuery<Work[], "works">;
 }
 
-export interface Label extends MinimalEntity {
+export type MinimalCollection =
+  & {
+    id: MBID;
+    name: string;
+    editor: string;
+    type: string;
+    "type-id": MBID;
+    "entity-type": EntityType;
+  }
+  & {
+    [Key in `${EntityType}-count`]?: number;
+  };
+
+export type Collection =
+  & MinimalCollection
+  & {
+    [Key in EntityType as EntityPlural<Key>]?: MinimalEntityTypeMap[Key][];
+  };
+
+export interface MinimalEvent extends MinimalEntity {
+  time: string;
+  setlist: string;
+  cancelled: boolean;
+}
+
+export interface Event extends MinimalEvent {
+  "life-span": DatePeriod;
+}
+
+export interface Genre {
+  // No aliases present, can not use EntityBase.
+  id: MBID;
+  name: string;
+  disambiguation: string;
+}
+
+export interface Instrument extends MinimalEntity {
+  description: string;
+}
+
+export interface MinimalLabel extends MinimalEntity {
+  /** Sort name of the entity. */
+  "sort-name": string;
   "label-code": number | null;
 }
 
-export interface Recording extends EntityBase {
+export interface Label extends MinimalEntity {
+  country: IsoCountryCode | null;
+  area: MinimalArea | null;
+  "life-span": DatePeriod;
+  ipis: string[];
+  isnis: string[];
+  releases: SubQuery<MinimalRelease[], "releases">;
+}
+
+export interface Place extends MinimalEntity {
+  address: string;
+  area: MinimalArea | null;
+  /** Coordinates of the place (floating point). */
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  } | null;
+}
+
+interface CommonRecording extends EntityBase {
   title: string;
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   /** Recording length in milliseconds (integer). */
   length: number;
-  "first-release-date": IsoDate | null;
+  "first-release-date"?: IsoDate;
   video: boolean;
 }
 
-export interface Release extends EntityBase {
+export interface MinimalRecording extends CommonRecording {
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+}
+
+export interface Recording extends CommonRecording {
+  "artist-credit": ArtistCredit[]; // always present at top-level
+  isrcs: SubQuery<string[], "isrcs">;
+  releases: SubQuery<MinimalRelease, "releases">;
+}
+
+interface CommonRelease extends EntityBase {
   /** Title of the release. */
   title: string;
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
-  date: IsoDate; // null?
-  country: IsoCountryCode; // null?
+  date?: IsoDate; // null?
+  country?: IsoCountryCode | null;
   /** Release dates and areas. */
   "release-events": ReleaseEvent[]; // null?
   /** Barcode of the release, can be empty. */
   barcode: string;
-  "label-info": SubQuery<LabelInfo[], "labels">;
   packaging: ReleasePackaging | null;
   "packaging-id": MBID | null;
-  status: ReleaseStatus; // null?
-  "status-id": MBID; // null?
+  status: ReleaseStatus | null;
+  "status-id": MBID | null;
   /** Language and script of title and tracklist. */
   "text-representation": {
-    language: IsoLanguageCode; // null?
-    script: IsoScriptCode; // null?
+    language: IsoLanguageCode | null;
+    script: IsoScriptCode | null;
   };
-  media: SubQuery<Medium[], "recordings">;
+  media: SubQuery<Medium[], "media" | "discids" | "recordings">;
   /** Data quality rating. */
-  quality: DataQuality; // null?
+  quality: DataQuality;
+  "cover-art-archive"?: CoverArtArchiveInfo;
+  "release-group": SubQuery<ReleaseGroup, "release-groups">;
+  collections: SubQuery<
+    MinimalCollection[],
+    "collections" | "user-collections"
+  >;
+}
+
+export interface MinimalRelease extends CommonRelease {
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+}
+
+export interface Release extends CommonRelease {
+  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  "label-info": SubQuery<LabelInfo[], "labels">;
   /** Amazon ASIN. */
   asin: string | null;
-  "cover-art-archive": CoverArtArchiveInfo; // null?
+}
+
+export interface ReleaseGroup extends EntityBase {
+  title: string;
+  disambiguation: string;
+  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  "primary-type": ReleaseGroupPrimaryType | null;
+  "primary-type-id": MBID | null;
+  "secondary-types": ReleaseGroupSecondaryType[];
+  "secondary-type-ids": MBID[];
+  "first-release-date": IsoDate | null; // null?
+  // TODO: Sub-query below leads to circular references
+  // releases: SubQuery<MinimalRelease[], "releases">;
+}
+
+export interface Series extends MinimalEntity {
+}
+
+export interface Url extends EntityBase {
+  // No aliases present, can not use EntityBase.
+  id: MBID;
+  resource: string;
+}
+
+export interface Work extends EntityBase {
+  title: string;
+  disambiguation: string;
+  iswcs: string[];
+  attributes: EntityAttribute[];
+  languages: IsoLanguageCode[];
+  /** @deprecated */
+  language: IsoLanguageCode | null;
+  type: string | null;
+  "type-id": MBID | null;
 }
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
@@ -219,8 +389,15 @@ export interface Alias<Type extends string = string> extends DatePeriod {
 
 export interface ArtistCredit {
   name: string;
-  artist: MinimalEntity;
+  artist: MinimalArtist;
   joinphrase: string;
+}
+
+export interface EntityAttribute {
+  type: string;
+  "type-id": MBID;
+  value: string;
+  "value-id"?: MBID;
 }
 
 export interface Medium {
@@ -229,9 +406,11 @@ export interface Medium {
   title: string;
   "track-count": number;
   "track-offset": number;
-  format: string; // null?
-  "format-id": MBID; // null?
+  format: string | null;
+  "format-id": MBID | null;
+  pregap?: Track;
   tracks: Track[];
+  "data-tracks"?: Track[];
   discs: SubQuery<DiscId[], "discids">;
 }
 
@@ -250,19 +429,19 @@ export interface Track {
   position: number;
   number: string;
   title: string;
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+  "artist-credit": ArtistCredit[]; // always present
   /** Track length in milliseconds (integer). */
   length: number;
-  recording: Recording;
+  recording: SubQuery<MinimalRecording, "recordings">;
 }
 
 export interface ReleaseEvent {
   date: IsoDate; // null?
-  area: MinimalArea; // null?
+  area: MinimalArea | null; // null?
 }
 
 export interface LabelInfo {
-  label: Label;
+  label: MinimalLabel | null;
   "catalog-number": string | null;
 }
 
@@ -278,6 +457,3 @@ export interface CoverArtArchiveInfo {
   /** Cover art for this release has been disabled by a rights holder. */
   darkened: boolean;
 }
-
-/** TODO */
-export type DataQuality = "normal" | "high";

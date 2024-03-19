@@ -1,7 +1,7 @@
 export const entityTypes = [
   "area",
   "artist",
-	"collection",
+  "collection",
   "event",
   "genre",
   "instrument",
@@ -16,3 +16,8 @@ export const entityTypes = [
 ] as const;
 
 export type EntityType = typeof entityTypes[number];
+
+export type EntityPlural<T extends EntityType> =
+  // Append a plural "s" to all entity types except "series".
+  "series" extends T ? T
+    : `${T}s`;

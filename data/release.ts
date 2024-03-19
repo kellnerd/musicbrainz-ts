@@ -38,3 +38,5 @@ export type ReleaseStatus = keyof typeof statusTypeIds;
 
 /** Packaging of a release. */
 export type ReleasePackaging = keyof typeof packagingTypeIds;
+
+export type DataQuality = "low" | "normal" | "high";
