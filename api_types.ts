@@ -47,17 +47,18 @@ type SubQuery<
 };
 
 /**
- * Resolves to {@linkcode Key} unless {@linkcode Value} is a {@linkcode SubQuery}
- * for which the required {@linkcode Include} is not specified.
- * In that case it resolves to `never` which can be used to omit the key.
+ * Keys of all properties which are included in {@linkcode Entity} for the given
+ * {@linkcode Include} parameters.
  */
-type ShouldKeyBePresent<
-  Value,
-  Include extends IncludeParameter,
-  Key,
-> = Value extends SubQuery<infer _Data, infer RequiredInclude>
-  ? RequiredInclude extends Include ? Key : never
-  : Key;
+type AvailableKeys<Entity extends object, Include extends IncludeParameter> = {
+  [Key in keyof Entity]:
+    // Check if the value is a sub-query and infer its include type.
+    Entity[Key] extends SubQuery<infer _Data, infer RequiredInclude>
+      // Return key if the required include parameter is specified.
+      ? RequiredInclude extends Include ? Key : never
+      // Always return the key of regular properties.
+      : Key;
+}[keyof Entity];
 
 /** Applies the sub-query data unwrapping for all objects from the given data. */
 type UnwrapSubQuery<Data, Include extends IncludeParameter> =
@@ -81,8 +82,8 @@ export type WithIncludes<
   Entity extends object,
   Include extends IncludeParameter,
 > = {
-  // Process all properties and check whether the current key should be present.
-  [Key in keyof Entity as ShouldKeyBePresent<Entity[Key], Include, Key>]:
+  // Process all properties and check whether they should be available.
+  [Key in AvailableKeys<Entity, Include>]:
     // Check if the value is a sub-query and infer its data and include type.
     Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
       // Unwrap the sub-query if the required include parameter is specified.
@@ -117,7 +118,7 @@ export type CollectIncludes<Entity extends object> = Exclude<
         // Collect includes from all regular child properties.
         : CollectSubQueryIncludes<Entity[Key]>;
   }[StringKeyOf<Entity>], // Lookup the collected include value of each property.
-  undefined // TODO: Somehow optional props ("iso-3166-1-codes") add undefined to the type
+  undefined // Optional entity properties will add `undefined` to the type.
 >;
 
 /** Properties which all entity types have in common. */
