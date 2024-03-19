@@ -60,15 +60,15 @@ type ShouldKeyBePresent<
   : Key;
 
 /**
- * Applies the sub-query data unwrapping algorithm to the given data.
- * Each item of a data array has to be unwrapped individually.
+ * Applies the sub-query data unwrapping algorithm to all objects from the given
+ * data and leaves scalar values alone (they are passed through).
  */
-type UnwrapSubQuery<
-  Data extends object | object[],
-  Include extends IncludeParameter,
-> = Data extends Array<infer Item extends object>
-  ? WithIncludes<Item, Include>[]
-  : WithIncludes<Data, Include>;
+type UnwrapSubQuery<Data, Include extends IncludeParameter> =
+  // Each item of a data array has to be unwrapped individually.
+  Data extends Array<infer Item extends object> ? WithIncludes<Item, Include>[]
+    : Data extends object ? WithIncludes<Data, Include>
+    // Leave scalar values alone, there is nothing to unwrap.
+    : Data;
 
 /**
  * Entity with additional information for the given include parameters.
@@ -76,7 +76,6 @@ type UnwrapSubQuery<
  * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
  * the required {@linkcode Include} parameters have been specified and removes
  * all sub-queries for which this is not the case.
- * Regular properties of the entity are left alone (passed through).
  *
  * - Pass `never` as {@linkcode Include} to omit all sub-queries.
  * - Pass {@linkcode IncludeParameter} to include all sub-queries.
@@ -85,10 +84,14 @@ export type WithIncludes<
   Entity extends object,
   Include extends IncludeParameter,
 > = {
+  // Process all properties and check whether the current key should be present.
   [Key in keyof Entity as ShouldKeyBePresent<Entity[Key], Include, Key>]:
+    // Check if the value is a sub-query and infer its data and include type.
     Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+      // Unwrap the sub-query if the required include parameter is specified.
       ? RequiredInclude extends Include ? UnwrapSubQuery<Data, Include> : never
-      : Entity[Key];
+      // Always unwrap regular properties to find nested sub-queries.
+      : UnwrapSubQuery<Entity[Key], Include>;
 };
 
 /** Properties which all entity types have in common. */
