@@ -57,6 +57,7 @@ if (import.meta.main) {
   const outputPath = resolve(import.meta.dirname!, "./data/lookup.ts");
   const output = await Deno.open(outputPath, {
     write: true,
+    create: true,
     append,
     truncate: !append,
   });
