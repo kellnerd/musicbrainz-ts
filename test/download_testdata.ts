@@ -41,7 +41,7 @@ export function convertApiUrlToTestCase(
 ): [EntityType, MBID, string[]?] | undefined {
   const entity = extractEntityFromUrl(url);
   if (!entity) return;
-  const inc = new URL(url).searchParams.getAll("inc");
+  const inc = new URL(url).searchParams.get("inc")?.split("+");
   return [...entity, inc];
 }
 
