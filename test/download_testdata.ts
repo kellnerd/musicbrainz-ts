@@ -34,11 +34,20 @@ export const testdataImports = 'import type * as MB from "@/api_types.ts";\n';
 export const lookupTestCases: Array<[EntityType, MBID, string[]?]> = [
   ["recording", "94ed318a-fd7d-4abc-8491-a35e39f51dca"],
   ["event", "6b3aa18f-ce72-4494-bc7e-47d93ff723c7", ["aliases"]],
+  ["release", "742d6790-c5cb-463c-a105-5e76e44afec5", [
+    "annotation",
+    "discids",
+  ]],
+  ["release", "bbb829c1-6427-4dcb-96a0-c3932bdd789d", [
+    "artist-credits",
+    "labels",
+    "recordings",
+  ]],
 ];
 
 export function convertApiUrlToTestCase(
   url: string,
-): [EntityType, MBID, string[]?] | undefined {
+): [EntityType, MBID, string[] | undefined] | undefined {
   const entity = extractEntityFromUrl(url);
   if (!entity) return;
   const inc = new URL(url).searchParams.get("inc")?.split(/[\s+]/);
@@ -56,7 +65,7 @@ if (import.meta.main) {
   const append = Boolean(newTestCases.length);
 
   const outputDir = resolve(import.meta.dirname!, "data/");
-  await Deno.mkdir(outputDir, {recursive: true})
+  await Deno.mkdir(outputDir, { recursive: true });
   const outputPath = resolve(outputDir, "lookup.ts");
   const output = await Deno.open(outputPath, {
     write: true,
