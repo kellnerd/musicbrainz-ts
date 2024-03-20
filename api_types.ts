@@ -348,7 +348,7 @@ export interface ReleaseBase extends EntityBase {
   date?: IsoDate; // null?
   country?: IsoCountryCode | null;
   /** Release dates and areas. */
-  "release-events": ReleaseEvent[]; // null?
+  "release-events"?: ReleaseEvent[];
   /** Barcode of the release, can be empty (no barcode) or `null` (unset). */
   barcode: string | null;
   packaging: ReleasePackaging | null;
