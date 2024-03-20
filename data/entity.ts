@@ -21,3 +21,8 @@ export type EntityPlural<T extends EntityType> =
   // Append a plural "s" to all entity types except "series".
   "series" extends T ? T
     : `${T}s`;
+
+export type CollectableEntityType = Exclude<
+  EntityType,
+  "collection" | "genre" | "url"
+>;

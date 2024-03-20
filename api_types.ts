@@ -1,5 +1,5 @@
 import type { ArtistType, Gender } from "./data/artist.ts";
-import type { EntityPlural, EntityType } from "./data/entity.ts";
+import type { CollectableEntityType, EntityPlural } from "./data/entity.ts";
 import type {
   DataQuality,
   ReleasePackaging,
@@ -168,7 +168,7 @@ export type EntityTypeMap = {
 export type MinimalEntityTypeMap = {
   area: MinimalArea;
   artist: MinimalArtist;
-  collection: never;
+  collection: MinimalCollection;
   event: MinimalEvent;
   genre: Genre;
   instrument: Instrument;
@@ -246,16 +246,17 @@ export type MinimalCollection =
     editor: string;
     type: string;
     "type-id": MBID;
-    "entity-type": EntityType;
+    "entity-type": CollectableEntityType;
   }
   & {
-    [Key in `${EntityType}-count`]?: number;
+    [Key in `${CollectableEntityType}-count`]?: number;
   };
 
 export type Collection =
   & MinimalCollection
   & {
-    [Key in EntityType as EntityPlural<Key>]?: MinimalEntityTypeMap[Key][];
+    [Key in CollectableEntityType as EntityPlural<Key>]?:
+      MinimalEntityTypeMap[Key][];
   };
 
 export interface MinimalEvent extends MinimalEntity {
