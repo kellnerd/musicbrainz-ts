@@ -168,12 +168,12 @@ export type MinimalEntityTypeMap = {
   genre: Genre;
   instrument: Instrument;
   label: MinimalLabel;
-  place: Place;
+  place: MinimalPlace;
   recording: MinimalRecording;
   release: MinimalRelease;
-  "release-group": ReleaseGroup;
-  series: Series;
-  work: Work;
+  "release-group": MinimalReleaseGroup;
+  series: MinimalSeries;
+  work: MinimalWork;
   url: Url;
 };
 
@@ -182,7 +182,6 @@ export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
   aliases: SubQuery<Alias[], "aliases">;
-  annotation: SubQuery<string | null, "annotation">;
 }
 
 /** Properties which many entity types have in common. */
@@ -195,6 +194,11 @@ export interface MinimalEntity extends EntityBase {
   "type-id": MBID | null;
 }
 
+/** Miscellaneous sub-query properties many entity types have in common. */
+export interface MiscSubQueries {
+  annotation: SubQuery<string | null, "annotation">;
+}
+
 export interface MinimalArea extends MinimalEntity {
   /** Sort name of the entity. */
   "sort-name": string;
@@ -204,7 +208,7 @@ export interface MinimalArea extends MinimalEntity {
   "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
-export interface Area extends MinimalArea {
+export interface Area extends MinimalArea, MiscSubQueries {
   "life-span": DatePeriod;
 }
 
@@ -213,7 +217,7 @@ export interface MinimalArtist extends MinimalEntity {
   "sort-name": string;
 }
 
-export interface Artist extends MinimalArtist {
+export interface Artist extends MinimalArtist, MiscSubQueries {
   type: ArtistType | null; // override
   gender: Gender | null;
   "gender-id": MBID | null;
@@ -226,8 +230,8 @@ export interface Artist extends MinimalArtist {
   isnis: string[];
   recordings: SubQuery<MinimalRecording[], "recordings">;
   releases: SubQuery<MinimalRelease[], "releases">;
-  "release-groups": SubQuery<ReleaseGroup[], "release-groups">;
-  works: SubQuery<Work[], "works">;
+  "release-groups": SubQuery<MinimalReleaseGroup[], "release-groups">;
+  works: SubQuery<MinimalWork[], "works">;
 }
 
 export type MinimalCollection =
@@ -255,7 +259,7 @@ export interface MinimalEvent extends MinimalEntity {
   cancelled: boolean;
 }
 
-export interface MusicEvent extends MinimalEvent {
+export interface MusicEvent extends MinimalEvent, MiscSubQueries {
   "life-span": DatePeriod;
 }
 
@@ -266,7 +270,7 @@ export interface Genre {
   disambiguation: string;
 }
 
-export interface Instrument extends MinimalEntity {
+export interface Instrument extends MinimalEntity, MiscSubQueries {
   description: string;
 }
 
@@ -276,7 +280,7 @@ export interface MinimalLabel extends MinimalEntity {
   "label-code": number | null;
 }
 
-export interface Label extends MinimalEntity {
+export interface Label extends MinimalEntity, MiscSubQueries {
   country: IsoCountryCode | null;
   area: MinimalArea | null;
   "life-span": DatePeriod;
@@ -285,7 +289,7 @@ export interface Label extends MinimalEntity {
   releases: SubQuery<MinimalRelease[], "releases">;
 }
 
-export interface Place extends MinimalEntity {
+export interface MinimalPlace extends MinimalEntity {
   address: string;
   area: MinimalArea | null;
   /** Coordinates of the place (floating point). */
@@ -294,6 +298,8 @@ export interface Place extends MinimalEntity {
     longitude: number;
   } | null;
 }
+
+export interface Place extends MinimalPlace, MiscSubQueries {}
 
 export interface MinimalRecording extends EntityBase {
   title: string;
@@ -306,7 +312,7 @@ export interface MinimalRecording extends EntityBase {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
 }
 
-export interface Recording extends MinimalRecording {
+export interface Recording extends MinimalRecording, MiscSubQueries {
   isrcs: SubQuery<string[], "isrcs">;
   releases: SubQuery<MinimalRelease, "releases">;
 }
@@ -335,7 +341,7 @@ interface CommonRelease extends EntityBase {
   /** Data quality rating. */
   quality: DataQuality;
   "cover-art-archive"?: CoverArtArchiveInfo;
-  "release-group": SubQuery<ReleaseGroup, "release-groups">;
+  "release-group": SubQuery<MinimalReleaseGroup, "release-groups">;
   collections: SubQuery<
     MinimalCollection[],
     "collections" | "user-collections"
@@ -346,14 +352,14 @@ export interface MinimalRelease extends CommonRelease {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
 }
 
-export interface Release extends CommonRelease {
+export interface Release extends CommonRelease, MiscSubQueries {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "label-info": SubQuery<LabelInfo[], "labels">;
   /** Amazon ASIN. */
   asin: string | null;
 }
 
-export interface ReleaseGroup extends EntityBase {
+export interface MinimalReleaseGroup extends EntityBase {
   title: string;
   disambiguation: string;
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
@@ -362,12 +368,15 @@ export interface ReleaseGroup extends EntityBase {
   "secondary-types": ReleaseGroupSecondaryType[];
   "secondary-type-ids": MBID[];
   "first-release-date": IsoDate | null; // null?
-  // TODO: Sub-query below leads to circular references
-  // releases: SubQuery<MinimalRelease[], "releases">;
 }
 
-export interface Series extends MinimalEntity {
+export interface ReleaseGroup extends EntityBase, MiscSubQueries {
+  releases: SubQuery<MinimalRelease[], "releases">;
 }
+
+export type MinimalSeries = MinimalEntity;
+
+export interface Series extends MinimalSeries, MiscSubQueries {}
 
 export interface Url extends EntityBase {
   // No aliases present, can not use EntityBase.
@@ -375,7 +384,7 @@ export interface Url extends EntityBase {
   resource: string;
 }
 
-export interface Work extends EntityBase {
+export interface MinimalWork extends EntityBase {
   title: string;
   disambiguation: string;
   iswcs: string[];
@@ -386,6 +395,8 @@ export interface Work extends EntityBase {
   type: string | null;
   "type-id": MBID | null;
 }
+
+export interface Work extends MinimalWork, MiscSubQueries {}
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
 export interface Alias<Type extends string = string> extends DatePeriod {
