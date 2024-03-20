@@ -400,12 +400,12 @@ export interface Medium {
   /** Medium title, can be empty. */
   title: string;
   "track-count": number;
-  "track-offset": number;
+  "track-offset": SubQuery<number, "recordings">;
   format: string | null;
   "format-id": MBID | null;
-  pregap?: Track;
-  tracks: Track[];
-  "data-tracks"?: Track[];
+  pregap?: SubQuery<Track, "recordings">;
+  tracks: SubQuery<Track[], "recordings">;
+  "data-tracks"?: SubQuery<Track[], "recordings">;
   discs: SubQuery<DiscId[], "discids">;
 }
 
