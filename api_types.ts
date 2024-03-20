@@ -45,7 +45,7 @@ export type IncludeParameter = string;
  * Helper type to mark a property of an entity as optional sub-query.
  * The additional {@linkcode Data} from a sub-query is only present in API
  * responses if the {@linkcode RequiredInclude} parameter is specified.
- * 
+ *
  * Types which are using this helper have to be unwrapped again before usage,
  * {@linkcode UnwrapProperties} or {@linkcode WithIncludes} will do this.
  */
@@ -58,7 +58,10 @@ export type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
  * Keys of all properties which are included in {@linkcode Entity} for the given
  * {@linkcode Include} parameters.
  */
-export type AvailableKeys<Entity extends object, Include extends IncludeParameter> = {
+export type AvailableKeys<
+  Entity extends object,
+  Include extends IncludeParameter,
+> = {
   [Key in keyof Entity]:
     // Check if the value is a sub-query (or potentially undefined) and infer its include type.
     Exclude<Entity[Key], undefined> extends
@@ -105,7 +108,8 @@ export type UnwrapProperties<
   // Process all properties (preserves optionality), keys still have to be filtered later.
   [Key in keyof Entity]:
     // Check if the value is a sub-query and infer its data and include type.
-    Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+    Exclude<Entity[Key], undefined> extends
+      SubQuery<infer Data, infer RequiredInclude>
       // Unwrap the sub-query if the required include parameter is specified.
       ? RequiredInclude extends Include ? UnwrapData<Data, Include> : never
       // Always unwrap regular properties to find nested sub-queries.
@@ -132,7 +136,8 @@ export type CollectIncludes<Entity extends object> = Exclude<
   {
     [Key in keyof Entity]:
       // Check if the value is a sub-query and infer its data and include type.
-      Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
+      Exclude<Entity[Key], undefined> extends
+        SubQuery<infer Data, infer RequiredInclude>
         // Return the includes of the sub-query and collect those from its data.
         ? (RequiredInclude | CollectSubQueryIncludes<Data>)
         // Collect includes from all regular child properties.
