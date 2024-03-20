@@ -269,7 +269,7 @@ export interface MusicEvent extends MinimalEvent, MiscSubQueries {
 }
 
 export interface Genre {
-  // No aliases present, can not use EntityBase.
+  // Does not extend EntityBase as no aliases can be included.
   id: MBID;
   name: string;
   disambiguation: string;
@@ -383,8 +383,8 @@ export type MinimalSeries = MinimalEntity;
 
 export interface Series extends MinimalSeries, MiscSubQueries {}
 
-export interface Url extends EntityBase {
-  // No aliases present, can not use EntityBase.
+export interface Url {
+  // Does not extend EntityBase as no aliases can be included.
   id: MBID;
   resource: string;
 }
