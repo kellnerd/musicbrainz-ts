@@ -456,7 +456,7 @@ export interface Track {
   position: number;
   number: string;
   title: string;
-  "artist-credit": ArtistCredit[]; // always present
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number;
   recording: SubQuery<MinimalRecording, "recordings">;
