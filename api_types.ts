@@ -396,6 +396,7 @@ export interface MinimalReleaseGroup extends ReleaseGroupBase {
   "artist-credit":
     | SubQuery<ArtistCredit[], "artist-credits">
     | SubQuery<null, "artists">; // probably a bug in the MBS serializer
+  releases: SubQuery<[], "releases">; // always empty for nested release groups
 }
 
 export interface ReleaseGroup extends ReleaseGroupBase, MiscSubQueries {
