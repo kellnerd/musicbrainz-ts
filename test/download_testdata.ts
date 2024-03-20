@@ -52,6 +52,8 @@ export const lookupTestCases: Array<[EntityType, MBID, string[]?]> = [
   ]],
   // Has no release-events.
   ["release", "8693def6-3680-461d-9132-271400007a48"],
+  // Has a release event with no date, and another with no country.
+  ["release", "065aa2d6-e38e-4caa-b883-ea2ebf2ddda8"],
   ["recording", "a8ccb91b-1a09-49d9-b96a-4eb13bd5c0f7", [
     "artists",
     "releases",

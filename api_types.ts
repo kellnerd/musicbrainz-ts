@@ -22,7 +22,7 @@ export type IsoLanguageCode = string;
 /** ISO (four letter) code of a script. */
 export type IsoScriptCode = string;
 
-/** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM-DD` or `YYYY`). */
+/** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM-DD` or `YYYY`) or empty. */
 export type IsoDate = string;
 
 /**
@@ -345,7 +345,7 @@ export interface ReleaseBase extends EntityBase {
   title: string;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
-  date?: IsoDate; // null?
+  date?: IsoDate;
   country?: IsoCountryCode | null;
   /** Release dates and areas. */
   "release-events"?: ReleaseEvent[];
@@ -487,8 +487,8 @@ export interface Track {
 }
 
 export interface ReleaseEvent {
-  date: IsoDate; // null?
-  area: MinimalArea | null; // null?
+  date: IsoDate;
+  area: MinimalArea | null;
 }
 
 export interface LabelInfo {
