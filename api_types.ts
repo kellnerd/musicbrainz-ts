@@ -186,7 +186,17 @@ export type MinimalEntityTypeMap = {
 export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
+  // Aliases are always present unless a `$hide_aliases` flag is set by MBS.
   aliases?: SubQuery<Alias[], "aliases">;
+  // Ratings are always present at the top-level (except for area, place, release and series).
+  // They are only present in sub-queries if a `$force_ratings` flag is set by MBS.
+  rating?: SubQuery<Rating[], "ratings">;
+  "user-rating"?: SubQuery<UserRating[], "user-ratings">;
+  // Tags and genres are always present unless a `$hide_tags_and_genres` flag is set by MBS.
+  tags?: SubQuery<Tag[], "tags">;
+  "user-tags"?: SubQuery<UserTag[], "user-tags">;
+  genres?: SubQuery<GenreTag[], "genres">;
+  "user-genres"?: SubQuery<GenreUserTag[], "user-genres">;
 }
 
 /** Properties which many entity types have in common. */
@@ -271,8 +281,11 @@ export interface MusicEvent extends MinimalEvent, MiscSubQueries {
 
 export interface Genre {
   // Does not extend EntityBase as no aliases can be included.
+  /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
+  /** Name of the corresponding tag (lower case). */
   name: string;
+  /** Disambiguation comment, can be empty. */
   disambiguation: string;
 }
 
@@ -483,4 +496,31 @@ export interface CoverArtArchiveInfo {
   back: boolean;
   /** Cover art for this release has been disabled by a rights holder. */
   darkened: boolean;
+}
+
+export interface UserRating {
+  /** Rating value in range 0 to 100. */
+  value: number;
+}
+
+export interface Rating extends UserRating {
+  /** Number of users which have rated the entity. */
+  "votes-count": number;
+}
+
+export interface UserTag {
+  /** Name of the tag (lower case). */
+  name: string;
+}
+
+export interface Tag extends UserTag {
+  /** Number of users which have used the tag for the entity. */
+  count: number;
+}
+
+export type GenreUserTag = Genre;
+
+export interface GenreTag extends GenreUserTag {
+  /** Number of users which have used the genre tag for the entity. */
+  count: number;
 }
