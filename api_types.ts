@@ -329,10 +329,10 @@ export interface MinimalRecording extends EntityBase {
   "first-release-date"?: IsoDate;
   video: boolean;
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+  isrcs: SubQuery<string[], "isrcs">;
 }
 
 export interface Recording extends MinimalRecording, MiscSubQueries {
-  isrcs: SubQuery<string[], "isrcs">;
   releases: SubQuery<MinimalRelease, "releases">;
 }
 
