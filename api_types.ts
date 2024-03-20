@@ -215,10 +215,10 @@ export interface Area extends MinimalArea, MiscSubQueries {
 export interface MinimalArtist extends MinimalEntity {
   /** Sort name of the entity. */
   "sort-name": string;
+  type: ArtistType | null; // override
 }
 
 export interface Artist extends MinimalArtist, MiscSubQueries {
-  type: ArtistType | null; // override
   gender: Gender | null;
   "gender-id": MBID | null;
   area: MinimalArea | null;
@@ -326,7 +326,7 @@ interface CommonRelease extends EntityBase {
   country?: IsoCountryCode | null;
   /** Release dates and areas. */
   "release-events": ReleaseEvent[]; // null?
-  /** Barcode of the release, can be empty. */
+  /** Barcode of the release, can be empty (no barcode) or `null` (unset). */
   barcode: string | null;
   packaging: ReleasePackaging | null;
   "packaging-id": MBID | null;
