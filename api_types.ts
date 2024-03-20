@@ -45,8 +45,11 @@ export type IncludeParameter = string;
  * Helper type to mark a property of an entity as optional sub-query.
  * The additional {@linkcode Data} from a sub-query is only present in API
  * responses if the {@linkcode RequiredInclude} parameter is specified.
+ * 
+ * Types which are using this helper have to be unwrapped again before usage,
+ * {@linkcode UnwrapProperties} or {@linkcode WithIncludes} will do this.
  */
-type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
+export type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
   readonly __inc__: RequiredInclude;
   readonly __data__: Data;
 };
@@ -55,10 +58,11 @@ type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
  * Keys of all properties which are included in {@linkcode Entity} for the given
  * {@linkcode Include} parameters.
  */
-type AvailableKeys<Entity extends object, Include extends IncludeParameter> = {
+export type AvailableKeys<Entity extends object, Include extends IncludeParameter> = {
   [Key in keyof Entity]:
-    // Check if the value is a sub-query and infer its include type.
-    Entity[Key] extends SubQuery<infer _Data, infer RequiredInclude>
+    // Check if the value is a sub-query (or potentially undefined) and infer its include type.
+    Exclude<Entity[Key], undefined> extends
+      SubQuery<infer _Data, infer RequiredInclude>
       // Return key if the required include parameter is specified.
       ? RequiredInclude extends Include ? Key : never
       // Always return the key of regular properties.
@@ -66,7 +70,7 @@ type AvailableKeys<Entity extends object, Include extends IncludeParameter> = {
 }[keyof Entity];
 
 /** Applies the sub-query data unwrapping for all objects from the given data. */
-type UnwrapSubQuery<Data, Include extends IncludeParameter> =
+type UnwrapData<Data, Include extends IncludeParameter> =
   // Each item of a data array has to be unwrapped individually.
   Data extends Array<infer Item extends object> ? WithIncludes<Item, Include>[]
     : Data extends object ? WithIncludes<Data, Include>
@@ -76,25 +80,36 @@ type UnwrapSubQuery<Data, Include extends IncludeParameter> =
 /**
  * {@linkcode Entity} with additional information for the given include parameters.
  *
- * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
- * the required {@linkcode Include} parameters have been specified and removes
- * all sub-queries for which this is not the case.
- *
- * - Pass `never` as {@linkcode Include} to omit all sub-queries.
- * - Pass {@linkcode IncludeParameter} to include all sub-queries.
+ * Recursively unwraps the data and removes unavailable properties.
  */
 export type WithIncludes<
   Entity extends object,
   Include extends IncludeParameter,
+> = Pick<
+  UnwrapProperties<Entity, Include>,
+  AvailableKeys<Entity, Include>
+>;
+
+/**
+ * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
+ * the required {@linkcode Include} parameters have been specified and removes
+ * all sub-queries (by replacing them with `never`) for which this is not the case.
+ *
+ * - Pass `never` as {@linkcode Include} to omit all sub-queries.
+ * - Pass {@linkcode IncludeParameter} to include all sub-queries.
+ */
+export type UnwrapProperties<
+  Entity extends object,
+  Include extends IncludeParameter,
 > = {
-  // Process all properties and check whether they should be available.
-  [Key in AvailableKeys<Entity, Include>]:
+  // Process all properties (preserves optionality), keys still have to be filtered later.
+  [Key in keyof Entity]:
     // Check if the value is a sub-query and infer its data and include type.
     Entity[Key] extends SubQuery<infer Data, infer RequiredInclude>
       // Unwrap the sub-query if the required include parameter is specified.
-      ? RequiredInclude extends Include ? UnwrapSubQuery<Data, Include> : never
+      ? RequiredInclude extends Include ? UnwrapData<Data, Include> : never
       // Always unwrap regular properties to find nested sub-queries.
-      : UnwrapSubQuery<Entity[Key], Include>;
+      : UnwrapData<Entity[Key], Include>;
 };
 
 type StringKeyOf<T> = keyof T extends string ? keyof T : never;
