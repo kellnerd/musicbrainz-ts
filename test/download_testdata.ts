@@ -44,6 +44,20 @@ export const lookupTestCases: Array<[EntityType, MBID, string[]?]> = [
     "labels",
     "recordings",
   ]],
+  ["release", "b50caad5-fe40-4c98-8947-f2a77ccc8a6c", [
+    "recordings",
+    "isrcs",
+    "tags",
+    "genres",
+  ]],
+  ["recording", "a8ccb91b-1a09-49d9-b96a-4eb13bd5c0f7", [
+    "artists",
+    "releases",
+    "release-groups",
+  ]],
+  ["url", "73770827-4419-464f-a07e-d34231ed4391"],
+  // "aliases" is allowed but does nothing for genres (yet)
+  ["genre", "6d76ba14-94f3-4677-a153-9263f8d50f95", ["aliases"]],
 ];
 
 export function convertApiUrlToTestCase(
