@@ -320,7 +320,7 @@ export interface MinimalPlace extends MinimalEntity {
 
 export interface Place extends MinimalPlace, MiscSubQueries {}
 
-export interface MinimalRecording extends EntityBase {
+export interface RecordingBase extends EntityBase {
   title: string;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
@@ -328,15 +328,19 @@ export interface MinimalRecording extends EntityBase {
   length: number;
   "first-release-date"?: IsoDate;
   video: boolean;
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   isrcs: SubQuery<string[], "isrcs">;
 }
 
-export interface Recording extends MinimalRecording, MiscSubQueries {
+export interface MinimalRecording extends RecordingBase {
+  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+}
+
+export interface Recording extends RecordingBase, MiscSubQueries {
+  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: SubQuery<MinimalRelease, "releases">;
 }
 
-interface CommonRelease extends EntityBase {
+export interface ReleaseBase extends EntityBase {
   /** Title of the release. */
   title: string;
   /** Disambiguation comment, can be empty. */
@@ -367,11 +371,11 @@ interface CommonRelease extends EntityBase {
   >;
 }
 
-export interface MinimalRelease extends CommonRelease {
+export interface MinimalRelease extends ReleaseBase {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
 }
 
-export interface Release extends CommonRelease, MiscSubQueries {
+export interface Release extends ReleaseBase, MiscSubQueries {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "label-info": SubQuery<LabelInfo[], "labels">;
   /** Amazon ASIN. */
