@@ -337,7 +337,7 @@ export interface MinimalRecording extends RecordingBase {
 
 export interface Recording extends RecordingBase, MiscSubQueries {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  releases: SubQuery<MinimalRelease, "releases">;
+  releases: SubQuery<MinimalRelease[], "releases">;
 }
 
 export interface ReleaseBase extends EntityBase {
