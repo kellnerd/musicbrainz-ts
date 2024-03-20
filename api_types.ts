@@ -186,7 +186,7 @@ export type MinimalEntityTypeMap = {
 export interface EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
-  aliases: SubQuery<Alias[], "aliases">;
+  aliases?: SubQuery<Alias[], "aliases">;
 }
 
 /** Properties which many entity types have in common. */
