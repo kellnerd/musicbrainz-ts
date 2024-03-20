@@ -382,10 +382,9 @@ export interface Release extends ReleaseBase, MiscSubQueries {
   asin: string | null;
 }
 
-export interface MinimalReleaseGroup extends EntityBase {
+export interface ReleaseGroupBase extends EntityBase {
   title: string;
   disambiguation: string;
-  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "primary-type": ReleaseGroupPrimaryType | null;
   "primary-type-id": MBID | null;
   "secondary-types": ReleaseGroupSecondaryType[];
@@ -393,7 +392,14 @@ export interface MinimalReleaseGroup extends EntityBase {
   "first-release-date": IsoDate | null; // null?
 }
 
-export interface ReleaseGroup extends EntityBase, MiscSubQueries {
+export interface MinimalReleaseGroup extends ReleaseGroupBase {
+  "artist-credit":
+    | SubQuery<ArtistCredit[], "artist-credits">
+    | SubQuery<null, "artists">; // probably a bug in the MBS serializer
+}
+
+export interface ReleaseGroup extends ReleaseGroupBase, MiscSubQueries {
+  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: SubQuery<MinimalRelease[], "releases">;
 }
 
