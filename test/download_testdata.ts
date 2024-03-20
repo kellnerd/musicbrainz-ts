@@ -39,6 +39,7 @@ export const lookupTestCases: Array<[EntityType, MBID, string[]?]> = [
     "discids",
   ]],
   ["release", "bbb829c1-6427-4dcb-96a0-c3932bdd789d", [
+    "aliases",
     "artist-credits",
     "labels",
     "recordings",
