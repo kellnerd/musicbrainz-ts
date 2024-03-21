@@ -244,7 +244,11 @@ export interface Artist extends MinimalArtist, MiscSubQueries {
   country: IsoCountryCode | null;
   "life-span": DatePeriod;
   "begin-area": MinimalArea | null;
+  /** @deprecated See [MBS-10826](https://tickets.metabrainz.org/browse/MBS-10826). */
+  "begin_area"?: MinimalArea | null;
   "end-area": MinimalArea | null;
+  /** @deprecated See [MBS-10826](https://tickets.metabrainz.org/browse/MBS-10826). */
+  "end_area"?: MinimalArea | null;
   ipis: string[];
   isnis: string[];
   recordings: SubQuery<MinimalRecording[], "recordings">;
