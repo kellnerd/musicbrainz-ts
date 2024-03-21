@@ -456,11 +456,13 @@ export interface Medium {
   /** Medium title, can be empty. */
   title: string;
   "track-count": number;
-  "track-offset": SubQuery<number, "recordings">;
+  /** Position of the first loaded track minus one, missing for an empty medium. */
+  "track-offset"?: SubQuery<number, "recordings">;
   format: string | null;
   "format-id": MBID | null;
   pregap?: SubQuery<Track, "recordings">;
-  tracks: SubQuery<Track[], "recordings">;
+  /** List of tracks, missing for an empty medium. */
+  tracks?: SubQuery<Track[], "recordings">;
   "data-tracks"?: SubQuery<Track[], "recordings">;
   discs: SubQuery<DiscId[], "discids">;
 }
