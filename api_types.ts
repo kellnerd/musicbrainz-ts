@@ -22,7 +22,7 @@ export type IsoLanguageCode = string;
 /** ISO (four letter) code of a script. */
 export type IsoScriptCode = string;
 
-/** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM-DD` or `YYYY`) or empty. */
+/** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM` or `YYYY`). */
 export type IsoDate = string;
 
 /**
@@ -326,6 +326,10 @@ export interface RecordingBase extends EntityBase {
   disambiguation: string;
   /** Recording length in milliseconds (integer). */
   length: number;
+  /**
+   * Release date of the earliest release which contains the recording.
+   * Missing for standalone recordings or if no release has a date.
+   */
   "first-release-date"?: IsoDate;
   video: boolean;
   isrcs: SubQuery<string[], "isrcs">;
@@ -389,7 +393,11 @@ export interface ReleaseGroupBase extends EntityBase {
   "primary-type-id": MBID | null;
   "secondary-types": ReleaseGroupSecondaryType[];
   "secondary-type-ids": MBID[];
-  "first-release-date": IsoDate | null; // null?
+  /**
+   * Release date of the earliest release inside the release group.
+   * Empty if no release has a date or if the release group contains no releases.
+   */
+  "first-release-date": IsoDate;
 }
 
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
