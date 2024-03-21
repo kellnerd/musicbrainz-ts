@@ -61,16 +61,20 @@ export type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
 export type AvailableKeys<
   Entity extends object,
   Include extends IncludeParameter,
-> = {
-  [Key in keyof Entity]:
-    // Check if the value is a sub-query (or potentially undefined) and infer its include type.
-    Exclude<Entity[Key], undefined> extends
-      SubQuery<infer _Data, infer RequiredInclude>
-      // Return key if the required include parameter is specified.
-      ? RequiredInclude extends Include ? Key : never
-      // Always return the key of regular properties.
-      : Key;
-}[keyof Entity];
+> = Exclude<
+  {
+    [Key in keyof Entity]:
+      // Check if the value is a sub-query (or potentially undefined) and infer its include type.
+      Exclude<Entity[Key], undefined> extends
+        SubQuery<infer _Data, infer RequiredInclude>
+        // Return key if the required include parameter is specified.
+        ? RequiredInclude extends Include ? Key : never
+        // Always return the key of regular properties.
+        : Key;
+  }[keyof Entity],
+  // TS adds `undefined` to the type of all optional properties by default, remove it.
+  undefined
+>;
 
 /** Applies the sub-query data unwrapping for all objects from the given data. */
 type UnwrapData<Data, Include extends IncludeParameter> =
