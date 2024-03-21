@@ -78,10 +78,14 @@ export type AvailableKeys<
 
 /** Applies the sub-query data unwrapping for all objects from the given data. */
 type UnwrapData<Data, Include extends IncludeParameter> =
-  // Each item of a data array has to be unwrapped individually.
-  Data extends Array<infer Item extends object> ? WithIncludes<Item, Include>[]
+  // Skip empty arrays, they cause trouble when inferring their item type.
+  Data extends never[] ? []
+    // Each item of a data array has to be unwrapped individually (except primitives).
+    : Data extends Array<infer Item>
+    // Turn off distributivity to leave primitive union types alone.
+      ? [Item] extends [object] ? WithIncludes<Item, Include>[] : Data
     : Data extends object ? WithIncludes<Data, Include>
-    // Leave scalar values alone, there is nothing to unwrap.
+    // Leave primitive values alone, there is nothing to unwrap.
     : Data;
 
 /**
