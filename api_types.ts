@@ -487,51 +487,48 @@ export interface GenreTag extends GenreUserTag {
   count: number;
 }
 
-export type Relationship<
-  TargetType extends RelatableEntityType = RelatableEntityType,
-> =
-  & IfUnionType<
-    TargetType,
-    {
-      /** Target entity, only the key which matches the value of target type is present. */
-      [Key in TargetType as SnakeCase<Key>]?: MinimalEntityTypeMap[Key];
-    },
-    {
+export type RelationshipTypeMap = {
+  [TargetType in RelatableEntityType]:
+    & {
       /** Target entity. */
       [Key in TargetType as SnakeCase<Key>]: MinimalEntityTypeMap[Key];
     }
-  >
-  & {
-    /** Type of the target entity. */
-    "target-type": SnakeCase<TargetType>;
-    /** Name of the relationship type. */
-    type: string;
-    /** MBID of the relationship type. */
-    "type-id": MBID;
-    /**
-     * Direction of the relationship.
-     * Important if source and target entity have the same type.
-     */
-    direction: RelationshipDirection;
-    /** Order of the relationship if relationships of this type are orderable. */
-    "ordering-key"?: number;
-    /** Names of the relationship attributes. */
-    attributes: string[];
-    /** Maps attribute names to their optional value. */
-    "attribute-values": Record<string, string>;
-    /** Maps attribute names to their MBID. */
-    "attribute-ids": Record<string, MBID>;
-    /**
-     * Maps attribute names to their optional credited name.
-     * Only present if any of the attributes is creditable.
-     */
-    "attribute-credits"?: Record<string, string>;
-    /** Credited name of the source entity, can be empty. */
-    "source-credit": string;
-    /** Credited name of the target entity, can be empty. */
-    "target-credit": string;
-  }
-  & DatePeriod;
+    & {
+      /** Type of the target entity. */
+      "target-type": SnakeCase<TargetType>;
+      /** Name of the relationship type. */
+      type: string;
+      /** MBID of the relationship type. */
+      "type-id": MBID;
+      /**
+       * Direction of the relationship.
+       * Important if source and target entity have the same type.
+       */
+      direction: RelationshipDirection;
+      /** Order of the relationship if relationships of this type are orderable. */
+      "ordering-key"?: number;
+      /** Names of the relationship attributes. */
+      attributes: string[];
+      /** Maps attribute names to their optional value. */
+      "attribute-values": Record<string, string>;
+      /** Maps attribute names to their MBID. */
+      "attribute-ids": Record<string, MBID>;
+      /**
+       * Maps attribute names to their optional credited name.
+       * Only present if any of the attributes is creditable.
+       */
+      "attribute-credits"?: Record<string, string>;
+      /** Credited name of the source entity, can be empty. */
+      "source-credit": string;
+      /** Credited name of the target entity, can be empty. */
+      "target-credit": string;
+    }
+    & DatePeriod;
+};
+
+export type Relationship<
+  TargetType extends RelatableEntityType = RelatableEntityType,
+> = RelationshipTypeMap[TargetType];
 
 export type RelationshipDirection = "backward" | "forward";
 

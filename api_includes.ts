@@ -80,7 +80,9 @@ type UnwrapData<Data, Include extends IncludeParameter> =
     // Each item of a data array has to be unwrapped individually (except primitives).
     : Data extends Array<infer Item>
     // Turn off distributivity to leave primitive union types alone.
-      ? [Item] extends [object] ? WithIncludes<Item, Include>[] : Data
+      ? [Item] extends [string | number | undefined] ? Item[]
+      : Item extends object ? WithIncludes<Item, Include>[]
+      : Item[]
     : Data extends object ? WithIncludes<Data, Include>
     // Leave primitive values alone, there is nothing to unwrap.
     : Data;
