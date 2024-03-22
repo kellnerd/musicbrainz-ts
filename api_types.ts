@@ -148,25 +148,42 @@ export interface Artist extends MinimalArtist, MiscSubQueries {
   works: SubQuery<MinimalWork[], "works">;
 }
 
-export type MinimalCollection =
+export type MinimalCollection<
+  ContentType extends CollectableEntityType = CollectableEntityType,
+> =
   & {
     id: MBID;
     name: string;
     editor: string;
     type: string;
     "type-id": MBID;
-    "entity-type": CollectableEntityType;
+    "entity-type": ContentType;
   }
-  & {
-    [Key in `${CollectableEntityType}-count`]?: number;
-  };
+  & IfUnionType<
+    ContentType,
+    {
+      [Key in `${ContentType}-count`]?: number;
+    },
+    {
+      [Key in `${ContentType}-count`]: number;
+    }
+  >;
 
-export type Collection =
-  & MinimalCollection
-  & {
-    [Key in CollectableEntityType as EntityPlural<Key>]?:
-      MinimalEntityTypeMap[Key][];
-  };
+export type Collection<
+  ContentType extends CollectableEntityType = CollectableEntityType,
+> =
+  & IfUnionType<
+    ContentType,
+    {
+      /** Collected entities, only the key which matches the value of entity type is present. */
+      [Key in ContentType as EntityPlural<Key>]?: MinimalEntityTypeMap[Key][];
+    },
+    {
+      /** Collected entities. */
+      [Key in ContentType as EntityPlural<Key>]: MinimalEntityTypeMap[Key][];
+    }
+  >
+  & MinimalCollection<ContentType>;
 
 export interface MinimalEvent extends MinimalEntity {
   time: string;
