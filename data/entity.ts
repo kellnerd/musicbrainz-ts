@@ -19,10 +19,15 @@ export type EntityType = typeof entityTypes[number];
 
 export type EntityPlural<T extends EntityType> =
   // Append a plural "s" to all entity types except "series".
-  "series" extends T ? T
+  T extends "series" ? T
     : `${T}s`;
 
 export type CollectableEntityType = Exclude<
   EntityType,
   "collection" | "genre" | "url"
+>;
+
+export type RelatableEntityType = Exclude<
+  EntityType,
+  "collection" | "genre"
 >;

@@ -1,5 +1,3 @@
-import { type EntityType, entityTypes } from "./data/entity.ts";
-
 /** Include parameters can be specified to request more information from the API. */
 export type IncludeParameter = string;
 
@@ -129,12 +127,6 @@ const miscIncludes = [
   "user-genres",
   "user-ratings",
 ] as const;
-
-// TODO: Filter genre (and maybe others?)
-/** Load relationships between the requested entity and the specific entity type. */
-const relIncludes = entityTypes.map((type) => `${type}-rels`);
-
-type RelIncludes = `${EntityType}-rels`;
 
 /** How much of the data about the linked entities should be included. */
 const subQueryIncludes = [

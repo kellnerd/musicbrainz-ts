@@ -1,6 +1,10 @@
 import type { SubQuery } from "./api_includes.ts";
 import type { ArtistType, Gender } from "./data/artist.ts";
-import type { CollectableEntityType, EntityPlural } from "./data/entity.ts";
+import type {
+  CollectableEntityType,
+  EntityPlural,
+  RelatableEntityType,
+} from "./data/entity.ts";
 import type {
   DataQuality,
   ReleasePackaging,
@@ -58,7 +62,7 @@ export type MinimalEntityTypeMap = {
   collection: MinimalCollection;
   event: MinimalEvent;
   genre: Genre;
-  instrument: Instrument;
+  instrument: MinimalInstrument;
   label: MinimalLabel;
   place: MinimalPlace;
   recording: MinimalRecording;
@@ -99,6 +103,7 @@ export interface MinimalEntity extends EntityBase {
 /** Miscellaneous sub-query properties many entity types have in common. */
 export interface MiscSubQueries {
   annotation: SubQuery<string | null, "annotation">;
+  relations: SubQuery<Relationship[], RelInclude>;
 }
 
 export interface MinimalArea extends MinimalEntity {
@@ -180,9 +185,11 @@ export interface Genre {
   disambiguation: string;
 }
 
-export interface Instrument extends MinimalEntity, MiscSubQueries {
+export interface MinimalInstrument extends MinimalEntity {
   description: string;
 }
+
+export interface Instrument extends MinimalInstrument, MiscSubQueries {}
 
 export interface MinimalLabel extends MinimalEntity {
   /** Sort name of the entity. */
@@ -344,8 +351,11 @@ export interface ArtistCredit {
 }
 
 export interface DatePeriod {
+  /** Begin date. */
   begin: IsoDate | null;
+  /** End date. */
   end: IsoDate | null;
+  /** Indicates whether the date period is ended. */
   ended: boolean;
 }
 
@@ -442,6 +452,60 @@ export interface GenreTag extends GenreUserTag {
   /** Number of users which have used the genre tag for the entity. */
   count: number;
 }
+
+export type Relationship<
+  TargetType extends RelatableEntityType = RelatableEntityType,
+> =
+  & IfUnionType<
+    TargetType,
+    {
+      /** Target entity, only the key which matches the value of target type is present. */
+      [Key in TargetType]?: MinimalEntityTypeMap[Key];
+    },
+    {
+      /** Target entity. */
+      [Key in TargetType]: MinimalEntityTypeMap[Key];
+    }
+  >
+  & {
+    /** Type of the target entity. */
+    "target-type": TargetType;
+    /** Name of the relationship type. */
+    type: string;
+    /** MBID of the relationship type. */
+    "type-id": MBID;
+    /**
+     * Direction of the relationship.
+     * Important if source and target entity have the same type.
+     */
+    direction: RelationshipDirection;
+    /** Order of the relationship if relationships of this type are orderable. */
+    "ordering-key"?: number;
+    /** Names of the relationship attributes. */
+    attributes: string[];
+    /** Maps attribute names to their optional value. */
+    "attribute-values": Record<string, string>;
+    /** Maps attribute names to their MBID. */
+    "attribute-ids": Record<string, MBID>;
+    /**
+     * Maps attribute names to their optional credited name.
+     * Only present if any of the attributes is creditable.
+     */
+    "attribute-credits"?: Record<string, string>;
+    /** Credited name of the source entity, can be empty. */
+    "source-credit": string;
+    /** Credited name of the target entity, can be empty. */
+    "target-credit": string;
+  }
+  & DatePeriod;
+
+export type RelationshipDirection = "backward" | "forward";
+
+export type RelInclude = `${RelatableEntityType}-rels`;
+
+type IfUnionType<T, True, False, U extends T = T> = T extends unknown
+  ? [U] extends [T] ? False : True
+  : False;
 
 // The above entity types should not be used without this utility type.
 // Reexport it here as long as there are no `EntityWith` type aliases for each entity type.
