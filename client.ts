@@ -1,10 +1,10 @@
 import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
 import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
+import type { CollectIncludes, WithIncludes } from "./api_includes.ts";
 import type {
   Area,
   Artist,
-  CollectIncludes,
   Collection,
   EntityBase,
   Genre,
@@ -18,7 +18,6 @@ import type {
   ReleaseGroup,
   Series,
   Url,
-  WithIncludes,
   Work,
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
