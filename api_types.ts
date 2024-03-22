@@ -4,6 +4,7 @@ import type {
   CollectableEntityType,
   EntityPlural,
   RelatableEntityType,
+  SnakeCase,
 } from "./data/entity.ts";
 import type {
   DataQuality,
@@ -157,7 +158,7 @@ export type MinimalCollection<
     editor: string;
     type: string;
     "type-id": MBID;
-    "entity-type": ContentType;
+    "entity-type": SnakeCase<ContentType>;
   }
   & IfUnionType<
     ContentType,
@@ -493,16 +494,16 @@ export type Relationship<
     TargetType,
     {
       /** Target entity, only the key which matches the value of target type is present. */
-      [Key in TargetType]?: MinimalEntityTypeMap[Key];
+      [Key in TargetType as SnakeCase<Key>]?: MinimalEntityTypeMap[Key];
     },
     {
       /** Target entity. */
-      [Key in TargetType]: MinimalEntityTypeMap[Key];
+      [Key in TargetType as SnakeCase<Key>]: MinimalEntityTypeMap[Key];
     }
   >
   & {
     /** Type of the target entity. */
-    "target-type": TargetType;
+    "target-type": SnakeCase<TargetType>;
     /** Name of the relationship type. */
     type: string;
     /** MBID of the relationship type. */
