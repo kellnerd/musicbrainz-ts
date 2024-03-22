@@ -28,7 +28,10 @@ export type IsoLanguageCode = string;
 export type IsoScriptCode = string;
 
 /** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM` or `YYYY`). */
-export type IsoDate = string;
+export type IsoDate =
+  | `${number}-${number}-${number}`
+  | `${number}-${number}`
+  | `${number}`;
 
 /**
  * Language and optional territory and/or variant, separated by underscores:
@@ -295,7 +298,7 @@ export interface ReleaseGroupBase extends EntityBase {
    * Release date of the earliest release inside the release group.
    * Empty if no release has a date or if the release group contains no releases.
    */
-  "first-release-date": IsoDate;
+  "first-release-date": IsoDate | "";
 }
 
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
@@ -404,7 +407,7 @@ export interface Track {
 }
 
 export interface ReleaseEvent {
-  date: IsoDate;
+  date: IsoDate | "";
   area: MinimalArea | null;
 }
 
