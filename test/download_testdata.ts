@@ -49,6 +49,8 @@ export const lookupTestCases: Array<[EntityType, MBID, string[]?]> = [
     "isrcs",
     "tags",
     "genres",
+    "recording-level-rels",
+    "work-rels",
   ]],
   // Empty medium without tracks.
   ["release", "a929130a-535c-4827-8663-f048e1a7ca0d", ["recordings"]],

@@ -257,6 +257,10 @@ export interface MinimalRecording extends RecordingBase {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
 }
 
+export interface MinimalRecordingWithRels extends MinimalRecording {
+  relations: SubQuery<Relationship[], "recording-level-rels">;
+}
+
 export interface Recording extends RecordingBase, MiscSubQueries {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: SubQuery<MinimalRelease[], "releases">;
@@ -282,11 +286,9 @@ export interface ReleaseBase extends EntityBase {
     language: IsoLanguageCode | null;
     script: IsoScriptCode | null;
   };
-  media: SubQuery<Medium[], "media" | "discids" | "recordings">;
   /** Data quality rating. */
   quality: DataQuality;
   "cover-art-archive"?: CoverArtArchiveInfo;
-  "release-group": SubQuery<MinimalReleaseGroup, "release-groups">;
   collections: SubQuery<
     MinimalCollection[],
     "collections" | "user-collections"
@@ -295,11 +297,18 @@ export interface ReleaseBase extends EntityBase {
 
 export interface MinimalRelease extends ReleaseBase {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+  media: SubQuery<Medium[], "media" | "discids" | "recordings">;
+  "release-group": SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
 export interface Release extends ReleaseBase, MiscSubQueries {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "label-info": SubQuery<LabelInfo[], "labels">;
+  media: SubQuery<
+    Medium<MinimalRecordingWithRels>[],
+    "media" | "discids" | "recordings"
+  >;
+  "release-group": SubQuery<MinimalReleaseGroupWithRels, "release-groups">;
   /** Amazon ASIN. */
   asin: string | null;
 }
@@ -323,6 +332,10 @@ export interface MinimalReleaseGroup extends ReleaseGroupBase {
     | SubQuery<ArtistCredit[], "artist-credits">
     | SubQuery<null, "artists">; // probably a bug in the MBS serializer
   releases: SubQuery<[], "releases">; // always empty for nested release groups
+}
+
+export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
+  relations: SubQuery<Relationship[], "release-group-level-rels">;
 }
 
 export interface ReleaseGroup extends ReleaseGroupBase, MiscSubQueries {
@@ -386,7 +399,7 @@ export interface EntityAttribute {
   "value-id"?: MBID;
 }
 
-export interface Medium {
+export interface Medium<Recording extends MinimalRecording = MinimalRecording> {
   position: number;
   /** Medium title, can be empty. */
   title: string;
@@ -395,10 +408,10 @@ export interface Medium {
   "track-offset"?: SubQuery<number, "recordings">;
   format: string | null;
   "format-id": MBID | null;
-  pregap?: SubQuery<Track, "recordings">;
+  pregap?: SubQuery<Track<Recording>, "recordings">;
   /** List of tracks, missing for an empty medium. */
-  tracks?: SubQuery<Track[], "recordings">;
-  "data-tracks"?: SubQuery<Track[], "recordings">;
+  tracks?: SubQuery<Track<Recording>[], "recordings">;
+  "data-tracks"?: SubQuery<Track<Recording>[], "recordings">;
   discs: SubQuery<DiscId[], "discids">;
 }
 
@@ -412,7 +425,7 @@ export interface DiscId {
   offsets: number[];
 }
 
-export interface Track {
+export interface Track<Recording extends MinimalRecording = MinimalRecording> {
   id: MBID;
   position: number;
   number: string;
@@ -420,7 +433,7 @@ export interface Track {
   "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number;
-  recording: SubQuery<MinimalRecording, "recordings">;
+  recording: SubQuery<Recording, "recordings">;
 }
 
 export interface ReleaseEvent {
