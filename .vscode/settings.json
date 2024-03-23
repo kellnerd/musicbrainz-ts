@@ -1,0 +1,25 @@
+{
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": false,
+  "cSpell.ignorePaths": [
+    ".git/",
+    ".vscode/",
+    "test/data/"
+  ],
+  "cSpell.words": [
+    "Digifile",
+    "Discbox",
+    "discid",
+    "discids",
+    "ipis",
+    "isnis",
+    "isrcs",
+    "iswcs",
+    "linkcode",
+    "Longbox",
+    "mbid",
+    "pregap",
+    "setlist"
+  ]
+}
