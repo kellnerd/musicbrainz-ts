@@ -149,42 +149,37 @@ export interface Artist extends MinimalArtist, MiscSubQueries {
   works: SubQuery<MinimalWork[], "works">;
 }
 
-export type MinimalCollection<
-  ContentType extends CollectableEntityType = CollectableEntityType,
-> =
-  & {
-    id: MBID;
-    name: string;
-    editor: string;
-    type: string;
-    "type-id": MBID;
-    "entity-type": SnakeCase<ContentType>;
-  }
-  & IfUnionType<
-    ContentType,
-    {
-      [Key in `${ContentType}-count`]?: number;
-    },
-    {
+export type MinimalCollectionTypeMap = {
+  [ContentType in CollectableEntityType]:
+    & {
       [Key in `${ContentType}-count`]: number;
     }
-  >;
+    & {
+      id: MBID;
+      name: string;
+      editor: string;
+      type: string;
+      "type-id": MBID;
+      "entity-type": SnakeCase<ContentType>;
+    };
+};
 
-export type Collection<
+export type MinimalCollection<
   ContentType extends CollectableEntityType = CollectableEntityType,
-> =
-  & IfUnionType<
-    ContentType,
-    {
-      /** Collected entities, only the key which matches the value of entity type is present. */
-      [Key in ContentType as EntityPlural<Key>]?: MinimalEntityTypeMap[Key][];
-    },
-    {
+> = MinimalCollectionTypeMap[ContentType];
+
+export type CollectionTypeMap = {
+  [ContentType in CollectableEntityType]:
+    & {
       /** Collected entities. */
       [Key in ContentType as EntityPlural<Key>]: MinimalEntityTypeMap[Key][];
     }
-  >
-  & MinimalCollection<ContentType>;
+    & MinimalCollection<ContentType>;
+};
+
+export type Collection<
+  ContentType extends CollectableEntityType = CollectableEntityType,
+> = CollectionTypeMap[ContentType];
 
 export interface MinimalEvent extends MinimalEntity {
   time: string;
@@ -533,10 +528,6 @@ export type Relationship<
 export type RelationshipDirection = "backward" | "forward";
 
 export type RelInclude = `${RelatableEntityType}-rels`;
-
-type IfUnionType<T, True, False, U extends T = T> = T extends unknown
-  ? [U] extends [T] ? False : True
-  : False;
 
 // The above entity types should not be used without this utility type.
 // Reexport it here as long as there are no `EntityWith` type aliases for each entity type.
