@@ -1,7 +1,7 @@
 import type {
+  $SubQuery,
   IncludeParameter,
   PossibleRelTargetType,
-  SubQuery,
 } from "./api_includes.ts";
 import type { ArtistType, Gender } from "./data/artist.ts";
 import type {
@@ -47,20 +47,20 @@ export type Locale = string;
 
 /** Maps entity type names to their type definitions. */
 export type EntityTypeMap = {
-  area: Area;
-  artist: Artist;
-  collection: Collection;
-  event: MusicEvent;
-  genre: Genre;
-  instrument: Instrument;
-  label: Label;
-  place: Place;
-  recording: Recording;
-  release: Release;
-  "release-group": ReleaseGroup;
-  series: Series;
-  work: Work;
-  url: Url;
+  area: $Area;
+  artist: $Artist;
+  collection: $Collection;
+  event: $Event;
+  genre: $Genre;
+  instrument: $Instrument;
+  label: $Label;
+  place: $Place;
+  recording: $Recording;
+  release: $Release;
+  "release-group": $ReleaseGroup;
+  series: $Series;
+  work: $Work;
+  url: $Url;
 };
 
 /** Maps entity type names to their minimal type definitions (for sub-queries). */
@@ -69,7 +69,7 @@ export type MinimalEntityTypeMap = {
   artist: MinimalArtist;
   collection: MinimalCollection;
   event: MinimalEvent;
-  genre: Genre;
+  genre: $Genre;
   instrument: MinimalInstrument;
   label: MinimalLabel;
   place: MinimalPlace;
@@ -78,28 +78,28 @@ export type MinimalEntityTypeMap = {
   "release-group": MinimalReleaseGroup;
   series: MinimalSeries;
   work: MinimalWork;
-  url: Url;
+  url: $Url;
 };
 
 /** Properties which all entity types have in common. */
-export interface EntityBase {
+export interface $EntityBase {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
   // Aliases are always present unless a `$hide_aliases` flag is set by MBS.
-  aliases?: SubQuery<Alias[], "aliases">;
+  aliases?: $SubQuery<Alias[], "aliases">;
   // Ratings are always present at the top-level (except for area, place, release and series).
   // They are only present in sub-queries if a `$force_ratings` flag is set by MBS.
-  rating?: SubQuery<Rating[], "ratings">;
-  "user-rating"?: SubQuery<UserRating[], "user-ratings">;
+  rating?: $SubQuery<Rating[], "ratings">;
+  "user-rating"?: $SubQuery<UserRating[], "user-ratings">;
   // Tags and genres are always present unless a `$hide_tags_and_genres` flag is set by MBS.
-  tags?: SubQuery<Tag[], "tags">;
-  "user-tags"?: SubQuery<UserTag[], "user-tags">;
-  genres?: SubQuery<GenreTag[], "genres">;
-  "user-genres"?: SubQuery<GenreUserTag[], "user-genres">;
+  tags?: $SubQuery<Tag[], "tags">;
+  "user-tags"?: $SubQuery<UserTag[], "user-tags">;
+  genres?: $SubQuery<GenreTag[], "genres">;
+  "user-genres"?: $SubQuery<GenreUserTag[], "user-genres">;
 }
 
 /** Properties which many entity types have in common. */
-export interface MinimalEntity extends EntityBase {
+export interface MinimalEntity extends $EntityBase {
   /** Name of the entity. */
   name: string;
   /** Disambiguation comment, can be empty. */
@@ -112,8 +112,8 @@ export interface MinimalEntity extends EntityBase {
 export interface MiscSubQueries<
   Include extends IncludeParameter = IncludeParameter,
 > {
-  annotation: SubQuery<string | null, "annotation">;
-  relations: SubQuery<
+  annotation: $SubQuery<string | null, "annotation">;
+  relations: $SubQuery<
     Relationship<PossibleRelTargetType<Include>>[],
     RelInclude
   >;
@@ -128,7 +128,7 @@ export interface MinimalArea extends MinimalEntity {
   "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
-export interface Area<
+export interface $Area<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArea, MiscSubQueries<Include> {
   "life-span": DatePeriod;
@@ -140,7 +140,7 @@ export interface MinimalArtist extends MinimalEntity {
   type: ArtistType | null; // override
 }
 
-export interface Artist<
+export interface $Artist<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArtist, MiscSubQueries<Include> {
   gender: Gender | null;
@@ -156,10 +156,10 @@ export interface Artist<
   "end_area"?: MinimalArea | null;
   ipis: string[];
   isnis: string[];
-  recordings: SubQuery<MinimalRecording[], "recordings">;
-  releases: SubQuery<MinimalRelease[], "releases">;
-  "release-groups": SubQuery<MinimalReleaseGroup[], "release-groups">;
-  works: SubQuery<MinimalWork[], "works">;
+  recordings: $SubQuery<MinimalRecording[], "recordings">;
+  releases: $SubQuery<MinimalRelease[], "releases">;
+  "release-groups": $SubQuery<MinimalReleaseGroup[], "release-groups">;
+  works: $SubQuery<MinimalWork[], "works">;
 }
 
 export type MinimalCollectionTypeMap = {
@@ -190,7 +190,7 @@ export type CollectionTypeMap = {
     & MinimalCollection<ContentType>;
 };
 
-export type Collection<
+export type $Collection<
   ContentType extends CollectableEntityType = CollectableEntityType,
 > = CollectionTypeMap[ContentType];
 
@@ -200,13 +200,13 @@ export interface MinimalEvent extends MinimalEntity {
   cancelled: boolean;
 }
 
-export interface MusicEvent<
+export interface $Event<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalEvent, MiscSubQueries<Include> {
   "life-span": DatePeriod;
 }
 
-export interface Genre {
+export interface $Genre {
   // Does not extend EntityBase as no aliases can be included.
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
@@ -220,7 +220,7 @@ export interface MinimalInstrument extends MinimalEntity {
   description: string;
 }
 
-export interface Instrument<
+export interface $Instrument<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalInstrument, MiscSubQueries<Include> {}
 
@@ -230,7 +230,7 @@ export interface MinimalLabel extends MinimalEntity {
   "label-code": number | null;
 }
 
-export interface Label<
+export interface $Label<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalEntity, MiscSubQueries<Include> {
   country: IsoCountryCode | null;
@@ -238,7 +238,7 @@ export interface Label<
   "life-span": DatePeriod;
   ipis: string[];
   isnis: string[];
-  releases: SubQuery<MinimalRelease[], "releases">;
+  releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
 export interface MinimalPlace extends MinimalEntity {
@@ -251,11 +251,11 @@ export interface MinimalPlace extends MinimalEntity {
   } | null;
 }
 
-export interface Place<
+export interface $Place<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalPlace, MiscSubQueries<Include> {}
 
-export interface RecordingBase extends EntityBase {
+export interface RecordingBase extends $EntityBase {
   title: string;
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
@@ -267,25 +267,25 @@ export interface RecordingBase extends EntityBase {
    */
   "first-release-date"?: IsoDate;
   video: boolean;
-  isrcs: SubQuery<string[], "isrcs">;
+  isrcs: $SubQuery<string[], "isrcs">;
 }
 
 export interface MinimalRecording extends RecordingBase {
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+  "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
 }
 
 export interface MinimalRecordingWithRels extends MinimalRecording {
-  relations: SubQuery<Relationship[], "recording-level-rels">;
+  relations: $SubQuery<Relationship[], "recording-level-rels">;
 }
 
-export interface Recording<
+export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
 > extends RecordingBase, MiscSubQueries<Include> {
-  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  releases: SubQuery<MinimalRelease[], "releases">;
+  "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
-export interface ReleaseBase extends EntityBase {
+export interface ReleaseBase extends $EntityBase {
   /** Title of the release. */
   title: string;
   /** Disambiguation comment, can be empty. */
@@ -308,33 +308,33 @@ export interface ReleaseBase extends EntityBase {
   /** Data quality rating. */
   quality: DataQuality;
   "cover-art-archive"?: CoverArtArchiveInfo;
-  collections: SubQuery<
+  collections: $SubQuery<
     MinimalCollection[],
     "collections" | "user-collections"
   >;
 }
 
 export interface MinimalRelease extends ReleaseBase {
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
-  media: SubQuery<Medium[], "media" | "discids" | "recordings">;
-  "release-group": SubQuery<MinimalReleaseGroup, "release-groups">;
+  "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
+  media: $SubQuery<Medium[], "media" | "discids" | "recordings">;
+  "release-group": $SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
-export interface Release<
+export interface $Release<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseBase, MiscSubQueries<Include> {
-  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  "label-info": SubQuery<LabelInfo[], "labels">;
-  media: SubQuery<
+  "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  "label-info": $SubQuery<LabelInfo[], "labels">;
+  media: $SubQuery<
     Medium<MinimalRecordingWithRels>[],
     "media" | "discids" | "recordings"
   >;
-  "release-group": SubQuery<MinimalReleaseGroupWithRels, "release-groups">;
+  "release-group": $SubQuery<MinimalReleaseGroupWithRels, "release-groups">;
   /** Amazon ASIN. */
   asin: string | null;
 }
 
-export interface ReleaseGroupBase extends EntityBase {
+export interface ReleaseGroupBase extends $EntityBase {
   title: string;
   disambiguation: string;
   "primary-type": ReleaseGroupPrimaryType | null;
@@ -350,35 +350,35 @@ export interface ReleaseGroupBase extends EntityBase {
 
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
   "artist-credit":
-    | SubQuery<ArtistCredit[], "artist-credits">
-    | SubQuery<null, "artists">; // probably a bug in the MBS serializer
-  releases: SubQuery<[], "releases">; // always empty for nested release groups
+    | $SubQuery<ArtistCredit[], "artist-credits">
+    | $SubQuery<null, "artists">; // probably a bug in the MBS serializer
+  releases: $SubQuery<[], "releases">; // always empty for nested release groups
 }
 
 export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
-  relations: SubQuery<Relationship[], "release-group-level-rels">;
+  relations: $SubQuery<Relationship[], "release-group-level-rels">;
 }
 
-export interface ReleaseGroup<
+export interface $ReleaseGroup<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseGroupBase, MiscSubQueries<Include> {
-  "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  releases: SubQuery<MinimalRelease[], "releases">;
+  "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
 export type MinimalSeries = MinimalEntity;
 
-export interface Series<
+export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalSeries, MiscSubQueries<Include> {}
 
-export interface Url {
+export interface $Url {
   // Does not extend EntityBase as no aliases can be included.
   id: MBID;
   resource: string;
 }
 
-export interface MinimalWork extends EntityBase {
+export interface MinimalWork extends $EntityBase {
   title: string;
   disambiguation: string;
   iswcs: string[];
@@ -390,7 +390,7 @@ export interface MinimalWork extends EntityBase {
   "type-id": MBID | null;
 }
 
-export interface Work<
+export interface $Work<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalWork, MiscSubQueries<Include> {}
 
@@ -432,14 +432,14 @@ export interface Medium<Recording extends MinimalRecording = MinimalRecording> {
   title: string;
   "track-count": number;
   /** Position of the first loaded track minus one, missing for an empty medium. */
-  "track-offset"?: SubQuery<number, "recordings">;
+  "track-offset"?: $SubQuery<number, "recordings">;
   format: string | null;
   "format-id": MBID | null;
-  pregap?: SubQuery<Track<Recording>, "recordings">;
+  pregap?: $SubQuery<Track<Recording>, "recordings">;
   /** List of tracks, missing for an empty medium. */
-  tracks?: SubQuery<Track<Recording>[], "recordings">;
-  "data-tracks"?: SubQuery<Track<Recording>[], "recordings">;
-  discs: SubQuery<DiscId[], "discids">;
+  tracks?: $SubQuery<Track<Recording>[], "recordings">;
+  "data-tracks"?: $SubQuery<Track<Recording>[], "recordings">;
+  discs: $SubQuery<DiscId[], "discids">;
 }
 
 export interface DiscId {
@@ -457,10 +457,10 @@ export interface Track<Recording extends MinimalRecording = MinimalRecording> {
   position: number;
   number: string;
   title: string;
-  "artist-credit": SubQuery<ArtistCredit[], "artist-credits">;
+  "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number;
-  recording: SubQuery<Recording, "recordings">;
+  recording: $SubQuery<Recording, "recordings">;
 }
 
 export interface ReleaseEvent {
@@ -506,7 +506,7 @@ export interface Tag extends UserTag {
   count: number;
 }
 
-export type GenreUserTag = Genre;
+export type GenreUserTag = $Genre;
 
 export interface GenreTag extends GenreUserTag {
   /** Number of users which have used the genre tag for the entity. */

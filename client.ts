@@ -3,22 +3,22 @@ import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
 import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
 import type { CollectIncludes, WithIncludes } from "./api_includes.ts";
 import type {
-  Area,
-  Artist,
-  Collection,
-  EntityBase,
-  Genre,
-  Instrument,
-  Label,
+  $Area,
+  $Artist,
+  $Collection,
+  $EntityBase,
+  $Event,
+  $Genre,
+  $Instrument,
+  $Label,
+  $Place,
+  $Recording,
+  $Release,
+  $ReleaseGroup,
+  $Series,
+  $Url,
+  $Work,
   MBID,
-  MusicEvent,
-  Place,
-  Recording,
-  Release,
-  ReleaseGroup,
-  Series,
-  Url,
-  Work,
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { EntityType } from "./data/entity.ts";
@@ -52,81 +52,81 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Include extends CollectIncludes<Area> = never>(
+  lookup<Include extends CollectIncludes<$Area> = never>(
     entityType: "area",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Area, Include>>;
-  lookup<Include extends CollectIncludes<Artist> = never>(
+  ): Promise<WithIncludes<$Area, Include>>;
+  lookup<Include extends CollectIncludes<$Artist> = never>(
     entityType: "artist",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Artist, Include>>;
-  lookup<Include extends CollectIncludes<Collection> = never>(
+  ): Promise<WithIncludes<$Artist, Include>>;
+  lookup<Include extends CollectIncludes<$Collection> = never>(
     entityType: "collection",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Collection, Include>>;
-  lookup<Include extends CollectIncludes<MusicEvent> = never>(
+  ): Promise<WithIncludes<$Collection, Include>>;
+  lookup<Include extends CollectIncludes<$Event> = never>(
     entityType: "event",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<MusicEvent, Include>>;
-  lookup<Include extends CollectIncludes<Genre> = never>(
+  ): Promise<WithIncludes<$Event, Include>>;
+  lookup<Include extends CollectIncludes<$Genre> = never>(
     entityType: "genre",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Genre, Include>>;
-  lookup<Include extends CollectIncludes<Instrument> = never>(
+  ): Promise<WithIncludes<$Genre, Include>>;
+  lookup<Include extends CollectIncludes<$Instrument> = never>(
     entityType: "instrument",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Instrument, Include>>;
-  lookup<Include extends CollectIncludes<Label> = never>(
+  ): Promise<WithIncludes<$Instrument, Include>>;
+  lookup<Include extends CollectIncludes<$Label> = never>(
     entityType: "label",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Label, Include>>;
-  lookup<Include extends CollectIncludes<Place> = never>(
+  ): Promise<WithIncludes<$Label, Include>>;
+  lookup<Include extends CollectIncludes<$Place> = never>(
     entityType: "place",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Place, Include>>;
-  lookup<Include extends CollectIncludes<Recording> = never>(
+  ): Promise<WithIncludes<$Place, Include>>;
+  lookup<Include extends CollectIncludes<$Recording> = never>(
     entityType: "recording",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Recording, Include>>;
-  lookup<Include extends CollectIncludes<Release> = never>(
+  ): Promise<WithIncludes<$Recording, Include>>;
+  lookup<Include extends CollectIncludes<$Release> = never>(
     entityType: "release",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Release, Include>>;
-  lookup<Include extends CollectIncludes<ReleaseGroup> = never>(
+  ): Promise<WithIncludes<$Release, Include>>;
+  lookup<Include extends CollectIncludes<$ReleaseGroup> = never>(
     entityType: "release-group",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<ReleaseGroup, Include>>;
-  lookup<Include extends CollectIncludes<Series> = never>(
+  ): Promise<WithIncludes<$ReleaseGroup, Include>>;
+  lookup<Include extends CollectIncludes<$Series> = never>(
     entityType: "series",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Series, Include>>;
-  lookup<Include extends CollectIncludes<Url> = never>(
+  ): Promise<WithIncludes<$Series, Include>>;
+  lookup<Include extends CollectIncludes<$Url> = never>(
     entityType: "url",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Url, Include>>;
-  lookup<Include extends CollectIncludes<Work> = never>(
+  ): Promise<WithIncludes<$Url, Include>>;
+  lookup<Include extends CollectIncludes<$Work> = never>(
     entityType: "work",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<WithIncludes<Work, Include>>;
+  ): Promise<WithIncludes<$Work, Include>>;
   lookup(
     entityType: EntityType,
     mbid: MBID,
     inc?: string[],
-  ): Promise<EntityBase>;
+  ): Promise<$EntityBase>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assert(validate(mbid), `${mbid} is not a valid MBID`);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });

@@ -11,7 +11,7 @@ export type IncludeParameter = string;
  * Types which are using this helper have to be unwrapped again before usage,
  * {@linkcode WithIncludes} or {@linkcode UnwrapProperties} will do this.
  */
-export type SubQuery<Data, RequiredInclude extends IncludeParameter> = {
+export type $SubQuery<Data, RequiredInclude extends IncludeParameter> = {
   readonly __inc__: RequiredInclude;
   readonly __data__: Data;
 };
@@ -42,7 +42,7 @@ export type AvailableKeys<
       // Check if the value is a sub-query and infer its include type.
       // Exclude `undefined` from value to also detect optional sub-queries.
       Exclude<Entity[Key], undefined> extends
-        SubQuery<infer _Data, infer RequiredInclude>
+        $SubQuery<infer _Data, infer RequiredInclude>
         // Return key if the required include parameter is specified.
         ? RequiredInclude extends Include ? Key : never
         // Always return the key of regular properties.
@@ -53,7 +53,7 @@ export type AvailableKeys<
 >;
 
 /**
- * Recursively unwraps the data of all {@linkcode SubQuery} properties for which
+ * Recursively unwraps the data of all {@linkcode $SubQuery} properties for which
  * the required {@linkcode Include} parameters have been specified and removes
  * all sub-queries (by replacing them with `never`) for which this is not the case.
  *
@@ -68,7 +68,7 @@ export type UnwrapProperties<
   [Key in keyof Entity]:
     // Check if the value is a sub-query and infer its data and include type.
     Exclude<Entity[Key], undefined> extends
-      SubQuery<infer Data, infer RequiredInclude>
+      $SubQuery<infer Data, infer RequiredInclude>
       // Unwrap the sub-query if the required include parameter is specified.
       ? RequiredInclude extends Include ? UnwrapData<Data, Include> : never
       // Always unwrap regular properties to find nested sub-queries.
@@ -100,7 +100,7 @@ export type CollectIncludes<Entity extends object> = Exclude<
     [Key in keyof Entity]:
       // Check if the value is a sub-query and infer its data and include type.
       Exclude<Entity[Key], undefined> extends
-        SubQuery<infer Data, infer RequiredInclude>
+        $SubQuery<infer Data, infer RequiredInclude>
         // Return the includes of the sub-query and collect those from its data.
         ? (RequiredInclude | CollectSubQueryIncludes<Data>)
         // Collect includes from all regular child properties.
