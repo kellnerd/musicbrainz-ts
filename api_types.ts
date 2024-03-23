@@ -376,8 +376,10 @@ export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalSeries, WithAnnotation, WithRels<Include> {}
 
-export interface $Url {
-  // Does not extend EntityBase as no aliases can be included.
+export interface $Url<
+  Include extends IncludeParameter = IncludeParameter,
+> extends WithRels<Include> {
+  // Does not extend $EntityBase as no aliases can be included.
   id: MBID;
   resource: string;
 }
