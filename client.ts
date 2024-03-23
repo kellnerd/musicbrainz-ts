@@ -4,7 +4,8 @@ import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
 import type { MBID } from "./api_types.ts";
 import type * as MB from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
-import type { EntityType } from "./data/entity.ts";
+import { entityPlural } from "./data/entity.ts";
+import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
@@ -111,6 +112,15 @@ export class MusicBrainzClient {
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assert(validate(mbid), `${mbid} is not a valid MBID`);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
+  }
+
+  /** Looks up the collection with the given MBID, including its contents. */
+  lookupCollectionContents<ContentType extends CollectableEntityType>(
+    mbid: MBID,
+    contentType: ContentType,
+  ): Promise<MB.CollectionWithContents<ContentType>> {
+    assert(validate(mbid), `${mbid} is not a valid MBID`);
+    return this.get(["collection", mbid, entityPlural(contentType)].join("/"));
   }
 
   /**

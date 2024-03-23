@@ -51,7 +51,6 @@ export type Locale = string;
 export type EntityTypeMap = {
   area: $Area;
   artist: $Artist;
-  collection: $Collection;
   event: $Event;
   genre: $Genre;
   instrument: $Instrument;
@@ -69,7 +68,6 @@ export type EntityTypeMap = {
 export type MinimalEntityTypeMap = {
   area: MinimalArea;
   artist: MinimalArtist;
-  collection: MinimalCollection;
   event: MinimalEvent;
   genre: $Genre;
   instrument: MinimalInstrument;
@@ -196,9 +194,9 @@ export type CollectionTypeMap = {
     & MinimalCollection<ContentType>;
 };
 
-export type $Collection<
+export type CollectionWithContents<
   ContentType extends CollectableEntityType = CollectableEntityType,
-> = CollectionTypeMap[ContentType];
+> = WithIncludes<CollectionTypeMap[ContentType], never>;
 
 export interface MinimalEvent extends MinimalEntity {
   time: string;
@@ -587,7 +585,7 @@ export type Artist<Include extends ArtistInclude = never> = WithIncludes<
 >;
 
 /** All possible include parameter values for Collection entities. */
-export type CollectionInclude = CollectIncludes<$Collection>;
+export type CollectionInclude = CollectIncludes<MinimalCollection>;
 
 /** Collection entity (does not support include parameters). */
 export type Collection<Include extends CollectionInclude = never> =
