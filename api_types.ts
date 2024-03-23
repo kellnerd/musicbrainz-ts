@@ -589,9 +589,9 @@ export type Artist<Include extends ArtistInclude = never> = WithIncludes<
 /** All possible include parameter values for Collection entities. */
 export type CollectionInclude = CollectIncludes<$Collection>;
 
-/** Collection entity with additional data for the given include parameters. */
+/** Collection entity (does not support include parameters). */
 export type Collection<Include extends CollectionInclude = never> =
-  WithIncludes<$Collection<Include>, Include>;
+  MinimalCollection;
 
 /** All possible include parameter values for Event entities. */
 export type EventInclude = CollectIncludes<$Event>;

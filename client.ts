@@ -45,11 +45,10 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<MB.Artist<Include>>;
-  lookup<Include extends MB.CollectionInclude = never>(
+  lookup(
     entityType: "collection",
     mbid: MBID,
-    inc?: Include[],
-  ): Promise<MB.Collection<Include>>;
+  ): Promise<MB.Collection>;
   lookup<Include extends MB.EventInclude = never>(
     entityType: "event",
     mbid: MBID,
