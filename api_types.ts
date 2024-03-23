@@ -568,10 +568,6 @@ export type RelationshipDirection = "backward" | "forward";
 
 export type RelInclude = `${RelatableEntityType}-rels`;
 
-// The above entity types should not be used without this utility type.
-// Reexport it here as long as there are no `EntityWith` type aliases for each entity type.
-export type { WithIncludes } from "./api_includes.ts";
-
 /** All possible include parameter values for Area entities. */
 export type AreaInclude = CollectIncludes<$Area>;
 
