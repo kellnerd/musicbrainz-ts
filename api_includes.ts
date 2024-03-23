@@ -1,3 +1,5 @@
+import type { RelatableEntityType } from "./data/entity.ts";
+
 /** Include parameters can be specified to request more information from the API. */
 export type IncludeParameter = string;
 
@@ -115,6 +117,11 @@ type CollectSubQueryIncludes<Data> =
   Data extends Array<infer Item extends object> ? CollectIncludes<Item>
     : Data extends object ? CollectIncludes<Data>
     // Leave scalar values alone, there is nothing to collect.
+    : never;
+
+/** Derives the possible relationship target entity types from the given include parameters. */
+export type PossibleRelTargetType<Include extends IncludeParameter> =
+  Include extends `${infer Type extends RelatableEntityType}-rels` ? Type
     : never;
 
 /** Miscellaneous includes which can be used for (almost) all entity types. */

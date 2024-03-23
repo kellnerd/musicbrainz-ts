@@ -1,4 +1,8 @@
-import type { SubQuery } from "./api_includes.ts";
+import type {
+  IncludeParameter,
+  PossibleRelTargetType,
+  SubQuery,
+} from "./api_includes.ts";
 import type { ArtistType, Gender } from "./data/artist.ts";
 import type {
   CollectableEntityType,
@@ -105,9 +109,14 @@ export interface MinimalEntity extends EntityBase {
 }
 
 /** Miscellaneous sub-query properties many entity types have in common. */
-export interface MiscSubQueries {
+export interface MiscSubQueries<
+  Include extends IncludeParameter = IncludeParameter,
+> {
   annotation: SubQuery<string | null, "annotation">;
-  relations: SubQuery<Relationship[], RelInclude>;
+  relations: SubQuery<
+    Relationship<PossibleRelTargetType<Include>>[],
+    RelInclude
+  >;
 }
 
 export interface MinimalArea extends MinimalEntity {
@@ -119,7 +128,9 @@ export interface MinimalArea extends MinimalEntity {
   "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
-export interface Area extends MinimalArea, MiscSubQueries {
+export interface Area<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalArea, MiscSubQueries<Include> {
   "life-span": DatePeriod;
 }
 
@@ -129,7 +140,9 @@ export interface MinimalArtist extends MinimalEntity {
   type: ArtistType | null; // override
 }
 
-export interface Artist extends MinimalArtist, MiscSubQueries {
+export interface Artist<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalArtist, MiscSubQueries<Include> {
   gender: Gender | null;
   "gender-id": MBID | null;
   area: MinimalArea | null;
@@ -187,7 +200,9 @@ export interface MinimalEvent extends MinimalEntity {
   cancelled: boolean;
 }
 
-export interface MusicEvent extends MinimalEvent, MiscSubQueries {
+export interface MusicEvent<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalEvent, MiscSubQueries<Include> {
   "life-span": DatePeriod;
 }
 
@@ -205,7 +220,9 @@ export interface MinimalInstrument extends MinimalEntity {
   description: string;
 }
 
-export interface Instrument extends MinimalInstrument, MiscSubQueries {}
+export interface Instrument<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalInstrument, MiscSubQueries<Include> {}
 
 export interface MinimalLabel extends MinimalEntity {
   /** Sort name of the entity. */
@@ -213,7 +230,9 @@ export interface MinimalLabel extends MinimalEntity {
   "label-code": number | null;
 }
 
-export interface Label extends MinimalEntity, MiscSubQueries {
+export interface Label<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalEntity, MiscSubQueries<Include> {
   country: IsoCountryCode | null;
   area: MinimalArea | null;
   "life-span": DatePeriod;
@@ -232,7 +251,9 @@ export interface MinimalPlace extends MinimalEntity {
   } | null;
 }
 
-export interface Place extends MinimalPlace, MiscSubQueries {}
+export interface Place<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalPlace, MiscSubQueries<Include> {}
 
 export interface RecordingBase extends EntityBase {
   title: string;
@@ -257,7 +278,9 @@ export interface MinimalRecordingWithRels extends MinimalRecording {
   relations: SubQuery<Relationship[], "recording-level-rels">;
 }
 
-export interface Recording extends RecordingBase, MiscSubQueries {
+export interface Recording<
+  Include extends IncludeParameter = IncludeParameter,
+> extends RecordingBase, MiscSubQueries<Include> {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: SubQuery<MinimalRelease[], "releases">;
 }
@@ -297,7 +320,9 @@ export interface MinimalRelease extends ReleaseBase {
   "release-group": SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
-export interface Release extends ReleaseBase, MiscSubQueries {
+export interface Release<
+  Include extends IncludeParameter = IncludeParameter,
+> extends ReleaseBase, MiscSubQueries<Include> {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "label-info": SubQuery<LabelInfo[], "labels">;
   media: SubQuery<
@@ -334,14 +359,18 @@ export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
   relations: SubQuery<Relationship[], "release-group-level-rels">;
 }
 
-export interface ReleaseGroup extends ReleaseGroupBase, MiscSubQueries {
+export interface ReleaseGroup<
+  Include extends IncludeParameter = IncludeParameter,
+> extends ReleaseGroupBase, MiscSubQueries<Include> {
   "artist-credit": SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: SubQuery<MinimalRelease[], "releases">;
 }
 
 export type MinimalSeries = MinimalEntity;
 
-export interface Series extends MinimalSeries, MiscSubQueries {}
+export interface Series<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalSeries, MiscSubQueries<Include> {}
 
 export interface Url {
   // Does not extend EntityBase as no aliases can be included.
@@ -361,7 +390,9 @@ export interface MinimalWork extends EntityBase {
   "type-id": MBID | null;
 }
 
-export interface Work extends MinimalWork, MiscSubQueries {}
+export interface Work<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalWork, MiscSubQueries<Include> {}
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
 export interface Alias<Type extends string = string> extends DatePeriod {
