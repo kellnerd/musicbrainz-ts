@@ -578,7 +578,7 @@ export type Area<Include extends AreaInclude = never> = WithIncludes<
 >;
 
 /** All possible include parameter values for Artist entities. */
-export type ArtistInclude = CollectIncludes<$Artist>;
+export type ArtistInclude = CollectIncludes<$Artist> | "various-artists";
 
 /** Artist entity with additional data for the given include parameters. */
 export type Artist<Include extends ArtistInclude = never> = WithIncludes<

@@ -147,9 +147,3 @@ const subQueryIncludes = [
   "isrcs",
   "artist-credits",
 ] as const;
-
-const morePossibleArtistIncludes = [
-  // Include only those releases where the artist appears on one of the tracks,
-  // but not in the artist credit for the release itself.
-  "various-artists",
-] as const;
