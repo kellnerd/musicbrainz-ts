@@ -108,11 +108,15 @@ export interface MinimalEntity extends $EntityBase {
   "type-id": MBID | null;
 }
 
-/** Miscellaneous sub-query properties many entity types have in common. */
-export interface MiscSubQueries<
+/** Entity type can have an annotation. */
+export interface WithAnnotation {
+  annotation: $SubQuery<string | null, "annotation">;
+}
+
+/** Entity type can have relationships to other entities. */
+export interface WithRels<
   Include extends IncludeParameter = IncludeParameter,
 > {
-  annotation: $SubQuery<string | null, "annotation">;
   relations: $SubQuery<
     Relationship<PossibleRelTargetType<Include>>[],
     RelInclude
@@ -130,7 +134,7 @@ export interface MinimalArea extends MinimalEntity {
 
 export interface $Area<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalArea, MiscSubQueries<Include> {
+> extends MinimalArea, WithAnnotation, WithRels<Include> {
   "life-span": DatePeriod;
 }
 
@@ -142,7 +146,7 @@ export interface MinimalArtist extends MinimalEntity {
 
 export interface $Artist<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalArtist, MiscSubQueries<Include> {
+> extends MinimalArtist, WithAnnotation, WithRels<Include> {
   gender: Gender | null;
   "gender-id": MBID | null;
   area: MinimalArea | null;
@@ -202,12 +206,12 @@ export interface MinimalEvent extends MinimalEntity {
 
 export interface $Event<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalEvent, MiscSubQueries<Include> {
+> extends MinimalEvent, WithAnnotation, WithRels<Include> {
   "life-span": DatePeriod;
 }
 
 export interface $Genre {
-  // Does not extend EntityBase as no aliases can be included.
+  // Does not extend $EntityBase as no aliases can be included.
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
   /** Name of the corresponding tag (lower case). */
@@ -222,7 +226,7 @@ export interface MinimalInstrument extends MinimalEntity {
 
 export interface $Instrument<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalInstrument, MiscSubQueries<Include> {}
+> extends MinimalInstrument, WithAnnotation, WithRels<Include> {}
 
 export interface MinimalLabel extends MinimalEntity {
   /** Sort name of the entity. */
@@ -232,7 +236,7 @@ export interface MinimalLabel extends MinimalEntity {
 
 export interface $Label<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalEntity, MiscSubQueries<Include> {
+> extends MinimalEntity, WithAnnotation, WithRels<Include> {
   country: IsoCountryCode | null;
   area: MinimalArea | null;
   "life-span": DatePeriod;
@@ -253,7 +257,7 @@ export interface MinimalPlace extends MinimalEntity {
 
 export interface $Place<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalPlace, MiscSubQueries<Include> {}
+> extends MinimalPlace, WithAnnotation, WithRels<Include> {}
 
 export interface RecordingBase extends $EntityBase {
   title: string;
@@ -280,7 +284,7 @@ export interface MinimalRecordingWithRels extends MinimalRecording {
 
 export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
-> extends RecordingBase, MiscSubQueries<Include> {
+> extends RecordingBase, WithAnnotation, WithRels<Include> {
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
@@ -322,7 +326,7 @@ export interface MinimalRelease extends ReleaseBase {
 
 export interface $Release<
   Include extends IncludeParameter = IncludeParameter,
-> extends ReleaseBase, MiscSubQueries<Include> {
+> extends ReleaseBase, WithAnnotation, WithRels<Include> {
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   "label-info": $SubQuery<LabelInfo[], "labels">;
   media: $SubQuery<
@@ -361,7 +365,7 @@ export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
 
 export interface $ReleaseGroup<
   Include extends IncludeParameter = IncludeParameter,
-> extends ReleaseGroupBase, MiscSubQueries<Include> {
+> extends ReleaseGroupBase, WithAnnotation, WithRels<Include> {
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
@@ -370,7 +374,7 @@ export type MinimalSeries = MinimalEntity;
 
 export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalSeries, MiscSubQueries<Include> {}
+> extends MinimalSeries, WithAnnotation, WithRels<Include> {}
 
 export interface $Url {
   // Does not extend EntityBase as no aliases can be included.
@@ -392,7 +396,7 @@ export interface MinimalWork extends $EntityBase {
 
 export interface $Work<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalWork, MiscSubQueries<Include> {}
+> extends MinimalWork, WithAnnotation, WithRels<Include> {}
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
 export interface Alias<Type extends string = string> extends DatePeriod {
