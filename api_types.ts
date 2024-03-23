@@ -1,7 +1,9 @@
 import type {
   $SubQuery,
+  CollectIncludes,
   IncludeParameter,
   PossibleRelTargetType,
+  WithIncludes,
 } from "./api_includes.ts";
 import type { ArtistType, Gender } from "./data/artist.ts";
 import type {
@@ -569,3 +571,120 @@ export type RelInclude = `${RelatableEntityType}-rels`;
 // The above entity types should not be used without this utility type.
 // Reexport it here as long as there are no `EntityWith` type aliases for each entity type.
 export type { WithIncludes } from "./api_includes.ts";
+
+/** All possible include parameter values for Area entities. */
+export type AreaInclude = CollectIncludes<$Area>;
+
+/** Area entity with additional data for the given include parameters. */
+export type Area<Include extends AreaInclude = never> = WithIncludes<
+  $Area<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Artist entities. */
+export type ArtistInclude = CollectIncludes<$Artist>;
+
+/** Artist entity with additional data for the given include parameters. */
+export type Artist<Include extends ArtistInclude = never> = WithIncludes<
+  $Artist<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Collection entities. */
+export type CollectionInclude = CollectIncludes<$Collection>;
+
+/** Collection entity with additional data for the given include parameters. */
+export type Collection<Include extends CollectionInclude = never> =
+  WithIncludes<$Collection<Include>, Include>;
+
+/** All possible include parameter values for Event entities. */
+export type EventInclude = CollectIncludes<$Event>;
+
+/** Event entity with additional data for the given include parameters. */
+export type Event<Include extends EventInclude = never> = WithIncludes<
+  $Event<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Genre entities. */
+export type GenreInclude = CollectIncludes<$Genre>;
+
+/** Genre entity (does not support include parameters so far). */
+export type Genre<Include extends GenreInclude = never> = $Genre;
+
+/** All possible include parameter values for Instrument entities. */
+export type InstrumentInclude = CollectIncludes<$Instrument>;
+
+/** Instrument entity with additional data for the given include parameters. */
+export type Instrument<Include extends InstrumentInclude = never> =
+  WithIncludes<$Instrument<Include>, Include>;
+
+/** All possible include parameter values for Label entities. */
+export type LabelInclude = CollectIncludes<$Label>;
+
+/** Label entity with additional data for the given include parameters. */
+export type Label<Include extends LabelInclude = never> = WithIncludes<
+  $Label<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Place entities. */
+export type PlaceInclude = CollectIncludes<$Place>;
+
+/** Place entity with additional data for the given include parameters. */
+export type Place<Include extends PlaceInclude = never> = WithIncludes<
+  $Place<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Recording entities. */
+export type RecordingInclude = CollectIncludes<$Recording>;
+
+/** Recording entity with additional data for the given include parameters. */
+export type Recording<Include extends RecordingInclude = never> = WithIncludes<
+  $Recording<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Release entities. */
+export type ReleaseInclude = CollectIncludes<$Release>;
+
+/** Release entity with additional data for the given include parameters. */
+export type Release<Include extends ReleaseInclude = never> = WithIncludes<
+  $Release<Include>,
+  Include
+>;
+
+/** All possible include parameter values for ReleaseGroup entities. */
+export type ReleaseGroupInclude = CollectIncludes<$ReleaseGroup>;
+
+/** ReleaseGroup entity with additional data for the given include parameters. */
+export type ReleaseGroup<Include extends ReleaseGroupInclude = never> =
+  WithIncludes<$ReleaseGroup<Include>, Include>;
+
+/** All possible include parameter values for Series entities. */
+export type SeriesInclude = CollectIncludes<$Series>;
+
+/** Series entity with additional data for the given include parameters. */
+export type Series<Include extends SeriesInclude = never> = WithIncludes<
+  $Series<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Work entities. */
+export type WorkInclude = CollectIncludes<$Work>;
+
+/** Work entity with additional data for the given include parameters. */
+export type Work<Include extends WorkInclude = never> = WithIncludes<
+  $Work<Include>,
+  Include
+>;
+
+/** All possible include parameter values for Url entities. */
+export type UrlInclude = CollectIncludes<$Url>;
+
+/** Url entity with additional data for the given include parameters. */
+export type Url<Include extends UrlInclude = never> = WithIncludes<
+  $Url<Include>,
+  Include
+>;
