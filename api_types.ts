@@ -65,6 +65,24 @@ export type EntityTypeMap = {
   url: Url;
 };
 
+/** Maps entity type names to their possible include parameter value types. */
+export type EntityIncludeMap = {
+  area: AreaInclude;
+  artist: ArtistInclude;
+  collection: CollectionInclude;
+  event: EventInclude;
+  genre: GenreInclude;
+  instrument: InstrumentInclude;
+  label: LabelInclude;
+  place: PlaceInclude;
+  recording: RecordingInclude;
+  release: ReleaseInclude;
+  "release-group": ReleaseGroupInclude;
+  series: SeriesInclude;
+  work: WorkInclude;
+  url: UrlInclude;
+};
+
 /** Maps entity type names to their minimal type definitions (for sub-queries). */
 export type MinimalEntityTypeMap = {
   area: MinimalArea;
