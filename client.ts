@@ -155,8 +155,11 @@ export class MusicBrainzClient {
    *
    * This method should only be directly called for unsupported endpoints.
    */
-  // deno-lint-ignore no-explicit-any
-  async get(endpoint: string, query?: Query<string | number>): Promise<any> {
+  async get(
+    endpoint: string,
+    query?: Record<string, string | number>,
+    // deno-lint-ignore no-explicit-any
+  ): Promise<any> {
     const endpointUrl = new URL(endpoint, this.apiBaseUrl);
     if (query) {
       const definedParams = Object.entries(query).filter(
@@ -164,7 +167,6 @@ export class MusicBrainzClient {
       ) as string[][];
       // Hack above is needed to make TS accept query values of type `number`:
       // https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1568
-      endpointUrl.search = new URLSearchParams(query as Query).toString();
       endpointUrl.search = new URLSearchParams(definedParams).toString();
     }
 
@@ -231,6 +233,3 @@ export class MusicBrainzClient {
   #headers: HeadersInit;
   #rateLimitDelay = Promise.resolve();
 }
-
-/** URL query parameters. */
-export type Query<T extends string | number = string> = Record<string, T>;
