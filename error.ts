@@ -18,11 +18,11 @@ export interface ErrorResponse {
   /** Error message with a description. */
   error: string;
   /** Usage help message with link. */
-  help: string;
+  help?: string;
 }
 
 /** Checks whether the given JSON is an error response. */
 // deno-lint-ignore no-explicit-any
 export function isError(json: any): json is ErrorResponse {
-  return json.error && json.help;
+  return typeof json.error === "string";
 }

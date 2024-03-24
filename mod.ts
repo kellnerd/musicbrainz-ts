@@ -7,7 +7,7 @@ export type {
   ArtistInclude,
   Collection,
   CollectionWithContents,
-	EntityWithMbid,
+  EntityWithMbid,
   Event,
   EventInclude,
   Genre,
