@@ -2,8 +2,9 @@ import { resolve } from "https://deno.land/std@0.210.0/path/resolve.ts";
 import { toPascalCase } from "https://deno.land/std@0.220.1/text/case.ts";
 import type { EntityIncludeMap, MBID } from "@/api_types.ts";
 import { MusicBrainzClient } from "@/client.ts";
-import { extractEntityFromUrl, isDefined } from "@/utils.ts";
-import { EntityType } from "@/data/entity.ts";
+import { isDefined } from "@/utils.ts";
+import type { EntityType } from "@/data/entity.ts";
+import { extractEntityFromUrl } from "@/utils/entity.ts";
 
 /**
  * Generates a TypeScript constant from the result of a MusicBrainz API lookup

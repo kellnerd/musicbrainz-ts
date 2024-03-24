@@ -17,11 +17,6 @@ export const entityTypes = [
 
 export type EntityType = typeof entityTypes[number];
 
-/** Builds the plural form of the given entity type. */
-export function entityPlural(type: EntityType): EntityPlural<EntityType> {
-  return type === "series" ? type : `${type}s`;
-}
-
 export type EntityPlural<T extends EntityType> =
   // Append a plural "s" to all entity types except "series".
   T extends "series" ? T
