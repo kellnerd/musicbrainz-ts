@@ -22,9 +22,6 @@ export type EntityPlural<T extends EntityType> =
   T extends "series" ? T
     : `${T}s`;
 
-export type SnakeCase<KebabCase extends string> = KebabCase extends
-  `${infer A}-${infer B}` ? `${A}_${SnakeCase<B>}` : KebabCase;
-
 export type CollectableEntityType = Exclude<
   EntityType,
   "collection" | "genre" | "url"

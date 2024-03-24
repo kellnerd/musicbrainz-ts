@@ -10,7 +10,6 @@ import type {
   CollectableEntityType,
   EntityPlural,
   RelatableEntityType,
-  SnakeCase,
 } from "./data/entity.ts";
 import type {
   DataQuality,
@@ -21,6 +20,7 @@ import type {
   ReleaseGroupPrimaryType,
   ReleaseGroupSecondaryType,
 } from "./data/release_group.ts";
+import type { SnakeCase } from "./utils/type_utils.ts";
 
 /** MusicBrainz ID, a UUID (usually v4). */
 export type MBID = string;
