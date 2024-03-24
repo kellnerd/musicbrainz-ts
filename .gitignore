@@ -1,0 +1,5 @@
+# generated documentation
+docs/
+
+# downloaded testdata
+test/data/
