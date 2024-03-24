@@ -185,19 +185,21 @@ export interface $Artist<
   works: $SubQuery<MinimalWork[], "works">;
 }
 
+export interface CollectionBase<ContentType extends CollectableEntityType> {
+  id: MBID;
+  name: string;
+  editor: string;
+  type: string;
+  "type-id": MBID;
+  "entity-type": SnakeCase<ContentType>;
+}
+
 export type MinimalCollectionTypeMap = {
   [ContentType in CollectableEntityType]:
     & {
       [Key in `${ContentType}-count`]: number;
     }
-    & {
-      id: MBID;
-      name: string;
-      editor: string;
-      type: string;
-      "type-id": MBID;
-      "entity-type": SnakeCase<ContentType>;
-    };
+    & CollectionBase<ContentType>;
 };
 
 export type MinimalCollection<
@@ -538,42 +540,44 @@ export interface GenreTag extends GenreUserTag {
   count: number;
 }
 
+export interface RelationshipBase<TargetType extends RelatableEntityType> {
+  /** Type of the target entity. */
+  "target-type": SnakeCase<TargetType>;
+  /** Name of the relationship type. */
+  type: string;
+  /** MBID of the relationship type. */
+  "type-id": MBID;
+  /**
+   * Direction of the relationship.
+   * Important if source and target entity have the same type.
+   */
+  direction: RelationshipDirection;
+  /** Order of the relationship if relationships of this type are orderable. */
+  "ordering-key"?: number;
+  /** Names of the relationship attributes. */
+  attributes: string[];
+  /** Maps attribute names to their optional value. */
+  "attribute-values": Record<string, string>;
+  /** Maps attribute names to their MBID. */
+  "attribute-ids": Record<string, MBID>;
+  /**
+   * Maps attribute names to their optional credited name.
+   * Only present if any of the attributes is creditable.
+   */
+  "attribute-credits"?: Record<string, string>;
+  /** Credited name of the source entity, can be empty. */
+  "source-credit": string;
+  /** Credited name of the target entity, can be empty. */
+  "target-credit": string;
+}
+
 export type RelationshipTypeMap = {
   [TargetType in RelatableEntityType]:
     & {
       /** Target entity. */
       [Key in TargetType as SnakeCase<Key>]: MinimalEntityTypeMap[Key];
     }
-    & {
-      /** Type of the target entity. */
-      "target-type": SnakeCase<TargetType>;
-      /** Name of the relationship type. */
-      type: string;
-      /** MBID of the relationship type. */
-      "type-id": MBID;
-      /**
-       * Direction of the relationship.
-       * Important if source and target entity have the same type.
-       */
-      direction: RelationshipDirection;
-      /** Order of the relationship if relationships of this type are orderable. */
-      "ordering-key"?: number;
-      /** Names of the relationship attributes. */
-      attributes: string[];
-      /** Maps attribute names to their optional value. */
-      "attribute-values": Record<string, string>;
-      /** Maps attribute names to their MBID. */
-      "attribute-ids": Record<string, MBID>;
-      /**
-       * Maps attribute names to their optional credited name.
-       * Only present if any of the attributes is creditable.
-       */
-      "attribute-credits"?: Record<string, string>;
-      /** Credited name of the source entity, can be empty. */
-      "source-credit": string;
-      /** Credited name of the target entity, can be empty. */
-      "target-credit": string;
-    }
+    & RelationshipBase<TargetType>
     & DatePeriod;
 };
 
