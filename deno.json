@@ -1,10 +1,11 @@
 {
   "name": "@kellnerd/musicbrainz",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "exports": {
     ".": "./mod.ts",
     "./client": "./client.ts",
-    "./api_types": "./api_types.ts"
+    "./api_types": "./api_types.ts",
+    "./data/entity": "./data/entity.ts"
   },
   "imports": {
     "@/": "./",
@@ -17,7 +18,12 @@
   },
   "lock": false,
   "publish": {
-    "exclude": [".vscode/", "*.test.ts"]
+    "exclude": [
+      ".github",
+      ".vscode/",
+      "test/",
+      "*.test.ts"
+    ]
   },
   "tasks": {
     "load-testdata": "deno run --allow-net=musicbrainz.org --allow-write=test/data/ test/download_testdata.ts",
