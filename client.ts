@@ -68,7 +68,7 @@ export class MusicBrainzClient {
     };
 
     if (options.userAgent) {
-      this.#headers["UserAgent"] = options.userAgent;
+      this.#headers["User-Agent"] = options.userAgent;
     }
   }
 
@@ -222,14 +222,12 @@ export class MusicBrainzClient {
 
     /** Number of API usage units remaining in the current time window. */
     const remainingUnits = response.headers.get("X-RateLimit-Remaining");
-    console.log("X-RateLimit-Remaining", remainingUnits);
     if (remainingUnits && parseInt(remainingUnits) === 0) {
       /** Unix time in seconds when the current time window expires. */
       const rateLimitReset = response.headers.get("X-RateLimit-Reset");
       if (rateLimitReset) {
         const rateLimitDelay = parseInt(rateLimitReset) * 1000 - Date.now();
         if (rateLimitDelay > 0) {
-          console.log("Cool down", rateLimitDelay);
           this.#rateLimitDelay = delay(rateLimitDelay);
         }
       }
