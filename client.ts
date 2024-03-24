@@ -1,11 +1,10 @@
-import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
 import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
-import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
 import type { MBID } from "./api_types.ts";
 import type * as MB from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import { entityPlural } from "./data/entity.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
+import { assertMbid } from "./utils/entity.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
@@ -110,7 +109,7 @@ export class MusicBrainzClient {
     inc?: string[],
   ): Promise<MB.$EntityBase>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
-    assert(validate(mbid), `${mbid} is not a valid MBID`);
+    assertMbid(mbid);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
   }
 
@@ -119,7 +118,7 @@ export class MusicBrainzClient {
     mbid: MBID,
     contentType: ContentType,
   ): Promise<MB.CollectionWithContents<ContentType>> {
-    assert(validate(mbid), `${mbid} is not a valid MBID`);
+    assertMbid(mbid);
     return this.get(["collection", mbid, entityPlural(contentType)].join("/"));
   }
 
