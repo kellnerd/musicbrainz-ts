@@ -43,6 +43,12 @@ export interface ClientOptions {
    * @default "https://musicbrainz.org/ws/2/"
    */
   apiUrl?: string;
+
+  /**
+   * User-Agent header to identify your application.
+   * @example "MyAwesomeTagger/1.2.0 ( http://myawesometagger.example.com )"
+   */
+  userAgent?: string;
 }
 
 /**
@@ -60,6 +66,10 @@ export class MusicBrainzClient {
     this.#headers = {
       "Accept": "application/json",
     };
+
+    if (options.userAgent) {
+      this.#headers["UserAgent"] = options.userAgent;
+    }
   }
 
   /** Performs a lookup request for the given entity. */
