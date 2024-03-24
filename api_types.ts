@@ -49,19 +49,20 @@ export type Locale = string;
 
 /** Maps entity type names to their type definitions. */
 export type EntityTypeMap = {
-  area: $Area;
-  artist: $Artist;
-  event: $Event;
-  genre: $Genre;
-  instrument: $Instrument;
-  label: $Label;
-  place: $Place;
-  recording: $Recording;
-  release: $Release;
-  "release-group": $ReleaseGroup;
-  series: $Series;
-  work: $Work;
-  url: $Url;
+  area: Area;
+  artist: Artist;
+  collection: Collection;
+  event: Event;
+  genre: Genre;
+  instrument: Instrument;
+  label: Label;
+  place: Place;
+  recording: Recording;
+  release: Release;
+  "release-group": ReleaseGroup;
+  series: Series;
+  work: Work;
+  url: Url;
 };
 
 /** Maps entity type names to their minimal type definitions (for sub-queries). */
