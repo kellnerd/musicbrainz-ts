@@ -1,4 +1,4 @@
-import { delay } from "https://deno.land/std@0.210.0/async/delay.ts";
+import { delay } from "@std/async/delay";
 import type { MBID } from "./api_types.ts";
 import type * as MB from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";

@@ -1,5 +1,5 @@
-import { resolve } from "https://deno.land/std@0.210.0/path/resolve.ts";
-import { toPascalCase } from "https://deno.land/std@0.220.1/text/case.ts";
+import { resolve } from "@std/path/resolve";
+import { toPascalCase } from "@std/text/case";
 import type { EntityIncludeMap, MBID } from "@/api_types.ts";
 import { MusicBrainzClient } from "@/client.ts";
 import { isDefined } from "@/utils.ts";

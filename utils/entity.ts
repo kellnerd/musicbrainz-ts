@@ -1,5 +1,5 @@
-import { assert } from "https://deno.land/std@0.210.0/assert/assert.ts";
-import { validate } from "https://deno.land/std@0.210.0/uuid/mod.ts";
+import { assert } from "@std/assert/assert";
+import { validate } from "@std/uuid";
 import type { MBID } from "@/api_types.ts";
 import {
   type EntityPlural,
