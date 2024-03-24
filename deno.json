@@ -1,4 +1,11 @@
 {
+  "name": "@kellnerd/musicbrainz",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./mod.ts",
+    "./client": "./client.ts",
+    "./api_types": "./api_types.ts"
+  },
   "imports": {
     "@/": "./",
     "@std/assert": "jsr:@std/assert@^0.220.1",
@@ -9,6 +16,9 @@
     "@std/uuid": "jsr:@std/uuid@^0.220.1"
   },
   "lock": false,
+  "publish": {
+    "exclude": [".vscode/", "*.test.ts"]
+  },
   "tasks": {
     "load-testdata": "deno run --allow-net=musicbrainz.org --allow-write=test/data/ test/download_testdata.ts",
     "test-types": "deno check test/data/*.ts"
