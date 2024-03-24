@@ -100,10 +100,14 @@ export type MinimalEntityTypeMap = {
   url: $Url;
 };
 
-/** Properties which all entity types have in common. */
-export interface $EntityBase {
+/** Entity with an MBID. */
+export interface EntityWithMbid {
   /** MusicBrainz ID (MBID) of the entity. */
   id: MBID;
+}
+
+/** Optional properties which most entity types have in common. */
+export interface $EntityBase extends EntityWithMbid {
   // Aliases are always present unless a `$hide_aliases` flag is set by MBS.
   aliases?: $SubQuery<Alias[], "aliases">;
   // Ratings are always present at the top-level (except for area, place, release and series).
@@ -185,8 +189,9 @@ export interface $Artist<
   works: $SubQuery<MinimalWork[], "works">;
 }
 
-export interface CollectionBase<ContentType extends CollectableEntityType> {
-  id: MBID;
+export interface CollectionBase<
+  ContentType extends CollectableEntityType,
+> extends EntityWithMbid {
   name: string;
   editor: string;
   type: string;
@@ -231,10 +236,7 @@ export interface $Event<
   "life-span": DatePeriod;
 }
 
-export interface $Genre {
-  // Does not extend $EntityBase as no aliases can be included.
-  /** MusicBrainz ID (MBID) of the entity. */
-  id: MBID;
+export interface $Genre extends EntityWithMbid {
   /** Name of the corresponding tag (lower case). */
   name: string;
   /** Disambiguation comment, can be empty. */
@@ -399,9 +401,7 @@ export interface $Series<
 
 export interface $Url<
   Include extends IncludeParameter = IncludeParameter,
-> extends WithRels<Include> {
-  // Does not extend $EntityBase as no aliases can be included.
-  id: MBID;
+> extends EntityWithMbid, WithRels<Include> {
   resource: string;
 }
 
@@ -479,8 +479,9 @@ export interface DiscId {
   offsets: number[];
 }
 
-export interface Track<Recording extends MinimalRecording = MinimalRecording> {
-  id: MBID;
+export interface Track<
+  Recording extends MinimalRecording = MinimalRecording,
+> extends EntityWithMbid {
   position: number;
   number: string;
   title: string;

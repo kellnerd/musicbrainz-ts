@@ -1,12 +1,12 @@
 import { delay } from "@std/async/delay";
 import type {
-  $EntityBase,
   Area,
   AreaInclude,
   Artist,
   ArtistInclude,
   Collection,
   CollectionWithContents,
+  EntityWithMbid,
   Event,
   EventInclude,
   Genre,
@@ -135,7 +135,7 @@ export class MusicBrainzClient {
     entityType: EntityType,
     mbid: MBID,
     inc?: string[],
-  ): Promise<$EntityBase>;
+  ): Promise<EntityWithMbid>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assertMbid(mbid);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
