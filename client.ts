@@ -1,6 +1,35 @@
 import { delay } from "@std/async/delay";
-import type { MBID } from "./api_types.ts";
-import type * as MB from "./api_types.ts";
+import type {
+  $EntityBase,
+  Area,
+  AreaInclude,
+  Artist,
+  ArtistInclude,
+  Collection,
+  CollectionWithContents,
+  Event,
+  EventInclude,
+  Genre,
+  Instrument,
+  InstrumentInclude,
+  Label,
+  LabelInclude,
+  MBID,
+  Place,
+  PlaceInclude,
+  Recording,
+  RecordingInclude,
+  Release,
+  ReleaseGroup,
+  ReleaseGroupInclude,
+  ReleaseInclude,
+  Series,
+  SeriesInclude,
+  Url,
+  UrlInclude,
+  Work,
+  WorkInclude,
+} from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 import { assertMbid, entityPlural } from "./utils/entity.ts";
@@ -34,79 +63,79 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Include extends MB.AreaInclude = never>(
+  lookup<Include extends AreaInclude = never>(
     entityType: "area",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Area<Include>>;
-  lookup<Include extends MB.ArtistInclude = never>(
+  ): Promise<Area<Include>>;
+  lookup<Include extends ArtistInclude = never>(
     entityType: "artist",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Artist<Include>>;
+  ): Promise<Artist<Include>>;
   lookup(
     entityType: "collection",
     mbid: MBID,
-  ): Promise<MB.Collection>;
-  lookup<Include extends MB.EventInclude = never>(
+  ): Promise<Collection>;
+  lookup<Include extends EventInclude = never>(
     entityType: "event",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Event<Include>>;
+  ): Promise<Event<Include>>;
   lookup(
     entityType: "genre",
     mbid: MBID,
-  ): Promise<MB.Genre>;
-  lookup<Include extends MB.InstrumentInclude = never>(
+  ): Promise<Genre>;
+  lookup<Include extends InstrumentInclude = never>(
     entityType: "instrument",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Instrument<Include>>;
-  lookup<Include extends MB.LabelInclude = never>(
+  ): Promise<Instrument<Include>>;
+  lookup<Include extends LabelInclude = never>(
     entityType: "label",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Label<Include>>;
-  lookup<Include extends MB.PlaceInclude = never>(
+  ): Promise<Label<Include>>;
+  lookup<Include extends PlaceInclude = never>(
     entityType: "place",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Place<Include>>;
-  lookup<Include extends MB.RecordingInclude = never>(
+  ): Promise<Place<Include>>;
+  lookup<Include extends RecordingInclude = never>(
     entityType: "recording",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Recording<Include>>;
-  lookup<Include extends MB.ReleaseInclude = never>(
+  ): Promise<Recording<Include>>;
+  lookup<Include extends ReleaseInclude = never>(
     entityType: "release",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Release<Include>>;
-  lookup<Include extends MB.ReleaseGroupInclude = never>(
+  ): Promise<Release<Include>>;
+  lookup<Include extends ReleaseGroupInclude = never>(
     entityType: "release-group",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.ReleaseGroup<Include>>;
-  lookup<Include extends MB.SeriesInclude = never>(
+  ): Promise<ReleaseGroup<Include>>;
+  lookup<Include extends SeriesInclude = never>(
     entityType: "series",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Series<Include>>;
-  lookup<Include extends MB.UrlInclude = never>(
+  ): Promise<Series<Include>>;
+  lookup<Include extends UrlInclude = never>(
     entityType: "url",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Url<Include>>;
-  lookup<Include extends MB.WorkInclude = never>(
+  ): Promise<Url<Include>>;
+  lookup<Include extends WorkInclude = never>(
     entityType: "work",
     mbid: MBID,
     inc?: Include[],
-  ): Promise<MB.Work<Include>>;
+  ): Promise<Work<Include>>;
   lookup(
     entityType: EntityType,
     mbid: MBID,
     inc?: string[],
-  ): Promise<MB.$EntityBase>;
+  ): Promise<$EntityBase>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assertMbid(mbid);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
@@ -116,7 +145,7 @@ export class MusicBrainzClient {
   lookupCollectionContents<ContentType extends CollectableEntityType>(
     mbid: MBID,
     contentType: ContentType,
-  ): Promise<MB.CollectionWithContents<ContentType>> {
+  ): Promise<CollectionWithContents<ContentType>> {
     assertMbid(mbid);
     return this.get(["collection", mbid, entityPlural(contentType)].join("/"));
   }
