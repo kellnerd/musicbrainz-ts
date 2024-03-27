@@ -74,6 +74,11 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
+  lookup<Include extends ReleaseInclude = never>(
+    entityType: "release",
+    mbid: MBID,
+    inc?: Include[],
+  ): Promise<Release<Include>>;
   lookup<Include extends AreaInclude = never>(
     entityType: "area",
     mbid: MBID,
@@ -117,11 +122,6 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<Recording<Include>>;
-  lookup<Include extends ReleaseInclude = never>(
-    entityType: "release",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Release<Include>>;
   lookup<Include extends ReleaseGroupInclude = never>(
     entityType: "release-group",
     mbid: MBID,
