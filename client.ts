@@ -1,3 +1,9 @@
+/**
+ * MusicBrainz API client which aims for fully typed results.
+ *
+ * @module
+ */
+
 import { delay } from "@std/async/delay";
 import type {
   AnyInclude,
@@ -59,9 +65,29 @@ export interface ClientOptions {
  * @example
  * ```ts
  * const client = new MusicBrainzClient();
+ *
+ * // Lookup a group artist by MBID and include its artist relationships.
+ * // Type of the result is affected by the specified include parameters.
+ * const group = await client.lookup("artist",
+ *   "83d91898-7763-47d7-b03b-b92132375c47", ["artist-rels"]);
+ *
+ * // Find the members of the group from its relationships.
+ * // Property `relations` only exists because a relationship include was specified.
+ * const members = group.relations
+ *   // Filter by type name (for illustration, ideally you should use "type-id").
+ *   .filter((rel) => rel.type === "member of band")
+ *   // Extract the target artist. The `artist` property is guaranteed to exist
+ *   // and not optional because "artist-rels" is the only relationship include.
+ *   .map((rel) => rel.artist);
  * ```
  */
 export class MusicBrainzClient {
+  /**
+   * Creates a new MusicBrainz API client using the given options.
+   *
+   * You should provide a meaningful user-agent to avoid being blocked:
+   * https://wiki.musicbrainz.org/MusicBrainz_API/Rate_Limiting
+   */
   constructor(options: ClientOptions = {}) {
     this.apiBaseUrl = options.apiUrl ?? "https://musicbrainz.org/ws/2/";
 
