@@ -1,3 +1,9 @@
+/**
+ * Type definitions for MusicBrainz API results.
+ *
+ * @module
+ */
+
 import type {
   $SubQuery,
   CollectIncludes,
@@ -108,15 +114,32 @@ export interface EntityWithMbid {
 
 /** Optional properties which most entity types have in common. */
 export interface $EntityBase extends EntityWithMbid {
-  // Aliases are always present unless a `$hide_aliases` flag is set by MBS.
+  /**
+   * Alias names of the entity.
+   *
+   * Always present unless a `$hide_aliases` flag is set by MBS.
+   */
   aliases?: $SubQuery<Alias[], "aliases">;
-  // Ratings are always present at the top-level (except for area, place, release and series).
-  // They are only present in sub-queries if a `$force_ratings` flag is set by MBS.
+  /**
+   * Rating of the entity.
+   *
+   * Always present at the top-level, except for area, place, release and series.
+   * They are only present in sub-queries if a `$force_ratings` flag is set by MBS.
+   */
   rating?: $SubQuery<Rating, "ratings">;
   "user-rating"?: $SubQuery<UserRating, "user-ratings">;
-  // Tags and genres are always present unless a `$hide_tags_and_genres` flag is set by MBS.
+  /**
+   * Tags of the entity.
+   *
+   * Always present unless a `$hide_tags_and_genres` flag is set by MBS.
+   */
   tags?: $SubQuery<Tag[], "tags">;
   "user-tags"?: $SubQuery<UserTag[], "user-tags">;
+  /**
+   * Genres of the entity.
+   *
+   * Always present unless a `$hide_tags_and_genres` flag is set by MBS.
+   */
   genres?: $SubQuery<GenreTag[], "genres">;
   "user-genres"?: $SubQuery<GenreUserTag[], "user-genres">;
 }
@@ -133,6 +156,7 @@ export interface MinimalEntity extends $EntityBase {
 
 /** Entity type can have an annotation. */
 export interface WithAnnotation {
+  /** Annotation text of the entity. */
   annotation: $SubQuery<string | null, "annotation">;
 }
 
@@ -140,6 +164,7 @@ export interface WithAnnotation {
 export interface WithRels<
   Include extends IncludeParameter = IncludeParameter,
 > {
+  /** Relationships to other entities. */
   relations: $SubQuery<
     Relationship<PossibleRelTargetType<Include>>[],
     RelInclude
@@ -192,16 +217,20 @@ export interface $Artist<
 export interface CollectionBase<
   ContentType extends CollectableEntityType,
 > extends EntityWithMbid {
+  /** Name of the collection. */
   name: string;
+  /** Owner of the collection. */
   editor: string;
   type: string;
   "type-id": MBID;
+  /** Type of the collected entities. */
   "entity-type": SnakeCase<ContentType>;
 }
 
 export type MinimalCollectionTypeMap = {
   [ContentType in CollectableEntityType]:
     & {
+      /** Number of collected entities in the collection. */
       [Key in `${ContentType}-count`]: number;
     }
     & CollectionBase<ContentType>;
@@ -244,6 +273,7 @@ export interface $Genre extends EntityWithMbid {
 }
 
 export interface MinimalInstrument extends MinimalEntity {
+  /** Description of the instrument. */
   description: string;
 }
 
@@ -363,6 +393,7 @@ export interface $Release<
 
 export interface ReleaseGroupBase extends $EntityBase {
   title: string;
+  /** Disambiguation comment, can be empty. */
   disambiguation: string;
   "primary-type": ReleaseGroupPrimaryType | null;
   "primary-type-id": MBID | null;
@@ -432,8 +463,10 @@ export interface Alias<Type extends string = string> extends DatePeriod {
 }
 
 export interface ArtistCredit {
+  /** Credited name of the artist. */
   name: string;
   artist: MinimalArtist;
+  /** Join phrase between this artist and the next artist. */
   joinphrase: string;
 }
 
@@ -492,7 +525,9 @@ export interface Track<
 }
 
 export interface ReleaseEvent {
+  /** Release date. */
   date: IsoDate | "";
+  /** Release country. */
   area: MinimalArea | null;
 }
 
@@ -514,11 +549,13 @@ export interface CoverArtArchiveInfo {
   darkened: boolean;
 }
 
+/** Rating by a single user. */
 export interface UserRating {
   /** Rating value in range 0 to 100. */
   value: number;
 }
 
+/** Average rating. */
 export interface Rating extends UserRating {
   /** Number of users which have rated the entity. */
   "votes-count": number;
@@ -541,6 +578,7 @@ export interface GenreTag extends GenreUserTag {
   count: number;
 }
 
+/** Basic properties of a relationship. */
 export interface RelationshipBase<TargetType extends RelatableEntityType> {
   /** Type of the target entity. */
   "target-type": SnakeCase<TargetType>;
@@ -582,12 +620,15 @@ export type RelationshipTypeMap = {
     & DatePeriod;
 };
 
+/** Relationship between a source entity and a target entity of the given type. */
 export type Relationship<
   TargetType extends RelatableEntityType = RelatableEntityType,
 > = RelationshipTypeMap[TargetType];
 
+/** Direction of a relationship between two entities. */
 export type RelationshipDirection = "backward" | "forward";
 
+/** All possible include parameter values which affect included relationships. */
 export type RelInclude = `${RelatableEntityType}-rels`;
 
 /** All possible include parameter values for Area entities. */
