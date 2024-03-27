@@ -1,11 +1,14 @@
 {
   "name": "@kellnerd/musicbrainz",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "exports": {
     ".": "./mod.ts",
     "./client": "./client.ts",
     "./api_types": "./api_types.ts",
-    "./data/entity": "./data/entity.ts"
+    "./data/entity": "./data/entity.ts",
+    "./data/artist": "./data/artist.ts",
+    "./data/release": "./data/release.ts",
+    "./data/release_group": "./data/release_group.ts"
   },
   "imports": {
     "@/": "./",
