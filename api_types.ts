@@ -112,8 +112,8 @@ export interface $EntityBase extends EntityWithMbid {
   aliases?: $SubQuery<Alias[], "aliases">;
   // Ratings are always present at the top-level (except for area, place, release and series).
   // They are only present in sub-queries if a `$force_ratings` flag is set by MBS.
-  rating?: $SubQuery<Rating[], "ratings">;
-  "user-rating"?: $SubQuery<UserRating[], "user-ratings">;
+  rating?: $SubQuery<Rating, "ratings">;
+  "user-rating"?: $SubQuery<UserRating, "user-ratings">;
   // Tags and genres are always present unless a `$hide_tags_and_genres` flag is set by MBS.
   tags?: $SubQuery<Tag[], "tags">;
   "user-tags"?: $SubQuery<UserTag[], "user-tags">;
