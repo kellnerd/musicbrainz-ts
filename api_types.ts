@@ -706,3 +706,6 @@ export type Url<Include extends UrlInclude = never> = WithIncludes<
   $Url<Include>,
   Include
 >;
+
+/** All possible include parameter values for all entity types. */
+export type AnyInclude = EntityIncludeMap[keyof EntityIncludeMap];

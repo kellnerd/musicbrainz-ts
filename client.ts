@@ -1,5 +1,6 @@
 import { delay } from "@std/async/delay";
 import type {
+  AnyInclude,
   Area,
   AreaInclude,
   Artist,
@@ -144,7 +145,7 @@ export class MusicBrainzClient {
   lookup(
     entityType: EntityType,
     mbid: MBID,
-    inc?: string[],
+    inc?: AnyInclude[],
   ): Promise<EntityWithMbid>;
   lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
     assertMbid(mbid);

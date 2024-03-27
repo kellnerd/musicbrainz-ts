@@ -1,6 +1,6 @@
 import { resolve } from "@std/path/resolve";
 import { toPascalCase } from "@std/text/case";
-import type { EntityIncludeMap, MBID } from "@/api_types.ts";
+import type { AnyInclude, MBID } from "@/api_types.ts";
 import { MusicBrainzClient } from "@/client.ts";
 import { isDefined } from "@/utils.ts";
 import type { EntityType } from "@/data/entity.ts";
@@ -14,7 +14,7 @@ export async function fetchTestdata(
   client: MusicBrainzClient,
   entityType: EntityType,
   mbid: MBID,
-  includes?: string[],
+  includes?: AnyInclude[],
 ): Promise<string> {
   const result = await client.lookup(entityType, mbid, includes);
   const identifier = [entityType, mbid, ...(includes ?? [])]
@@ -33,7 +33,7 @@ export const testdataImports = 'import type * as MB from "@/api_types.ts";\n';
 export type LookupTestCase<T extends EntityType = EntityType> = [
   T,
   MBID,
-  EntityIncludeMap[T][]?,
+  AnyInclude[]?,
 ];
 
 /** Test cases for MusicBrainz API lookup requests. */
@@ -79,11 +79,11 @@ export const lookupTestCases: LookupTestCase[] = [
 
 export function convertApiUrlToTestCase(
   url: string,
-): [EntityType, MBID, string[] | undefined] | undefined {
+): LookupTestCase | undefined {
   const entity = extractEntityFromUrl(url);
   if (!entity) return;
   const inc = new URL(url).searchParams.get("inc")?.split(/[\s+]/);
-  return [...entity, inc];
+  return [...entity, inc as AnyInclude[]];
 }
 
 /**
