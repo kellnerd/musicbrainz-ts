@@ -6,41 +6,14 @@
 
 import { delay } from "@std/async/delay";
 import type {
-  AnyInclude,
-  Area,
-  AreaInclude,
-  Artist,
-  ArtistInclude,
-  Collection,
   CollectionWithContents,
-  EntityWithMbid,
-  Event,
-  EventInclude,
-  Genre,
-  Instrument,
-  InstrumentInclude,
-  Label,
-  LabelInclude,
+  EntityIncludeMap,
+  EntityTypeMap,
   MBID,
-  Place,
-  PlaceInclude,
-  Recording,
-  RecordingInclude,
-  Release,
-  ReleaseGroup,
-  ReleaseGroupInclude,
-  ReleaseInclude,
-  Series,
-  SeriesInclude,
-  Url,
-  UrlInclude,
-  Work,
-  WorkInclude,
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 import { assertMbid, entityPlural } from "./utils/entity.ts";
-import type { UnionTypeOrNever } from "./utils/type_utils.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
@@ -101,80 +74,11 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Include extends ReleaseInclude = never>(
-    entityType: "release",
+  lookup<Type extends EntityType, Include extends EntityIncludeMap[Type]>(
+    entityType: Type,
     mbid: MBID,
-    inc?: Include[],
-  ): Promise<Release<Include>>;
-  lookup<Include extends AreaInclude = never>(
-    entityType: "area",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Area<Include>>;
-  lookup<Include extends ArtistInclude = never>(
-    entityType: "artist",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Artist<Include>>;
-  lookup(
-    entityType: "collection",
-    mbid: MBID,
-  ): Promise<Collection>;
-  lookup<Include extends EventInclude = never>(
-    entityType: "event",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Event<Include>>;
-  lookup(
-    entityType: "genre",
-    mbid: MBID,
-  ): Promise<Genre>;
-  lookup<Include extends InstrumentInclude = never>(
-    entityType: "instrument",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Instrument<Include>>;
-  lookup<Include extends LabelInclude = never>(
-    entityType: "label",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Label<Include>>;
-  lookup<Include extends PlaceInclude = never>(
-    entityType: "place",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Place<Include>>;
-  lookup<Include extends RecordingInclude = never>(
-    entityType: "recording",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Recording<Include>>;
-  lookup<Include extends ReleaseGroupInclude = never>(
-    entityType: "release-group",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<ReleaseGroup<Include>>;
-  lookup<Include extends SeriesInclude = never>(
-    entityType: "series",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Series<Include>>;
-  lookup<Include extends UrlInclude = never>(
-    entityType: "url",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Url<Include>>;
-  lookup<Include extends WorkInclude = never>(
-    entityType: "work",
-    mbid: MBID,
-    inc?: Include[],
-  ): Promise<Work<Include>>;
-  lookup<T extends EntityType>(
-    entityType: UnionTypeOrNever<T>, // only accepts an undetermined type
-    mbid: MBID,
-    inc?: AnyInclude[],
-  ): Promise<EntityWithMbid>;
-  lookup(entityType: EntityType, mbid: MBID, inc: string[] = []) {
+    inc: Include[] = [],
+  ): Promise<EntityTypeMap<Include>[Type]> {
     assertMbid(mbid);
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
   }

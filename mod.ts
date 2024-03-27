@@ -8,6 +8,8 @@ export type {
   ArtistInclude,
   Collection,
   CollectionWithContents,
+  EntityIncludeMap,
+  EntityTypeMap,
   EntityWithMbid,
   Event,
   EventInclude,

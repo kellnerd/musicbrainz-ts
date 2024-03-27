@@ -53,22 +53,29 @@ export type IsoDate =
  */
 export type Locale = string;
 
-/** Maps entity type names to their type definitions. */
-export type EntityTypeMap = {
-  area: Area;
-  artist: Artist;
-  collection: Collection;
-  event: Event;
-  genre: Genre;
-  instrument: Instrument;
-  label: Label;
-  place: Place;
-  recording: Recording;
-  release: Release;
-  "release-group": ReleaseGroup;
-  series: Series;
-  work: Work;
-  url: Url;
+/**
+ * Maps entity type names to their type definitions.
+ *
+ * Accepts any include parameters, but only passes the supported
+ * include parameters to each entity type.
+ */
+export type EntityTypeMap<Include extends AnyInclude> = {
+  area: Area<Include extends AreaInclude ? Include : never>;
+  artist: Artist<Include extends ArtistInclude ? Include : never>;
+  collection: Collection<Include extends CollectionInclude ? Include : never>;
+  event: Event<Include extends EventInclude ? Include : never>;
+  genre: Genre<Include extends GenreInclude ? Include : never>;
+  instrument: Instrument<Include extends InstrumentInclude ? Include : never>;
+  label: Label<Include extends LabelInclude ? Include : never>;
+  place: Place<Include extends PlaceInclude ? Include : never>;
+  recording: Recording<Include extends RecordingInclude ? Include : never>;
+  release: Release<Include extends ReleaseInclude ? Include : never>;
+  "release-group": ReleaseGroup<
+    Include extends ReleaseGroupInclude ? Include : never
+  >;
+  series: Series<Include extends SeriesInclude ? Include : never>;
+  work: Work<Include extends WorkInclude ? Include : never>;
+  url: Url<Include extends UrlInclude ? Include : never>;
 };
 
 /** Maps entity type names to their possible include parameter value types. */
