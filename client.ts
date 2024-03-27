@@ -34,6 +34,7 @@ import type {
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 import { assertMbid, entityPlural } from "./utils/entity.ts";
+import type { UnionTypeOrNever } from "./utils/type_utils.ts";
 
 /** MusicBrainz API client configuration options. */
 export interface ClientOptions {
@@ -142,8 +143,8 @@ export class MusicBrainzClient {
     mbid: MBID,
     inc?: Include[],
   ): Promise<Work<Include>>;
-  lookup(
-    entityType: EntityType,
+  lookup<T extends EntityType>(
+    entityType: UnionTypeOrNever<T>, // only accepts an undetermined type
     mbid: MBID,
     inc?: AnyInclude[],
   ): Promise<EntityWithMbid>;
