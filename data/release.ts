@@ -1,3 +1,10 @@
+/**
+ * Release property values and their internal IDs.
+ *
+ * @module
+ */
+
+/** Release status name to ID mapping. */
 export const statusTypeIds = {
   "Official": 1,
   "Promotion": 2,
@@ -7,6 +14,7 @@ export const statusTypeIds = {
   "Cancelled": 6,
 };
 
+/** Release packaging name to ID mapping. */
 export const packagingTypeIds = {
   "Book": 9,
   "Box": 19,
@@ -39,4 +47,5 @@ export type ReleaseStatus = keyof typeof statusTypeIds;
 /** Packaging of a release. */
 export type ReleasePackaging = keyof typeof packagingTypeIds;
 
+/** Data quality of a release. */
 export type DataQuality = "low" | "normal" | "high";

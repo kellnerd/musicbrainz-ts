@@ -1,3 +1,10 @@
+/**
+ * Release group property values and their internal IDs.
+ *
+ * @module
+ */
+
+/** Primary release group type name to ID mapping. */
 export const primaryTypeIds = {
   "Album": 1,
   "Single": 2,
@@ -6,6 +13,7 @@ export const primaryTypeIds = {
   "Other": 11,
 };
 
+/** Secondary release group type name to ID mapping. */
 export const secondaryTypeIds = {
   "Audio drama": 11,
   "Audiobook": 5,
@@ -21,13 +29,13 @@ export const secondaryTypeIds = {
   "Spokenword": 3,
 };
 
-/** Primary release group type. */
+/** Primary type of a release group. */
 export type ReleaseGroupPrimaryType = keyof typeof primaryTypeIds;
 
-/** Secondary release group type. */
+/** Secondary type of a release group. */
 export type ReleaseGroupSecondaryType = keyof typeof secondaryTypeIds;
 
-/** Release group type (primary or secondary). */
+/** Type of a release group (primary or secondary). */
 export type ReleaseGroupType =
   | ReleaseGroupPrimaryType
   | ReleaseGroupSecondaryType;

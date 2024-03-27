@@ -1,3 +1,10 @@
+/**
+ * Artist property values and their internal IDs.
+ *
+ * @module
+ */
+
+/** Artist type name to ID mapping. */
 export const artistTypeIds = {
   "Person": 1,
   "Group": 2,
@@ -7,8 +14,10 @@ export const artistTypeIds = {
   "Other": 3,
 };
 
+/** Type of an artist. */
 export type ArtistType = keyof typeof artistTypeIds;
 
+/** Gender name to ID mapping. */
 export const genderIds = {
   "Male": 1,
   "Female": 2,
@@ -17,4 +26,5 @@ export const genderIds = {
   "Other": 3,
 };
 
+/** Gender of an artist. */
 export type Gender = keyof typeof genderIds;
