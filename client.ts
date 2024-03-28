@@ -154,15 +154,20 @@ export class MusicBrainzClient {
 
     /** Number of API usage units remaining in the current time window. */
     const remainingUnits = response.headers.get("X-RateLimit-Remaining");
-    if (remainingUnits && parseInt(remainingUnits) === 0) {
-      /** Unix time in seconds when the current time window expires. */
-      const rateLimitReset = response.headers.get("X-RateLimit-Reset");
-      if (rateLimitReset) {
-        const rateLimitDelay = parseInt(rateLimitReset) * 1000 - Date.now();
-        if (rateLimitDelay > 0) {
-          this.#rateLimitDelay = delay(rateLimitDelay);
+    if (remainingUnits) {
+      if (parseInt(remainingUnits) === 0) {
+        /** Unix time in seconds when the current time window expires. */
+        const rateLimitReset = response.headers.get("X-RateLimit-Reset");
+        if (rateLimitReset) {
+          const rateLimitDelay = parseInt(rateLimitReset) * 1000 - Date.now();
+          if (rateLimitDelay > 0) {
+            this.#rateLimitDelay = delay(rateLimitDelay);
+          }
         }
       }
+    } else {
+      // Fallback to strict rate limiting (1 req/s) if no header is present.
+      this.#rateLimitDelay = delay(1000);
     }
 
     return response;
