@@ -372,10 +372,6 @@ export interface ReleaseBase extends $EntityBase {
   /** Data quality rating. */
   quality: DataQuality;
   "cover-art-archive"?: CoverArtArchiveInfo;
-  collections: $SubQuery<
-    MinimalCollection[],
-    "collections" | "user-collections"
-  >;
 }
 
 export interface MinimalRelease extends ReleaseBase {
@@ -398,6 +394,10 @@ export interface $Release<
     "media" | "discids" | "recordings"
   >;
   "release-group": $SubQuery<MinimalReleaseGroupWithRels, "release-groups">;
+  collections: $SubQuery<
+    MinimalCollection<"release">[],
+    "collections" | "user-collections"
+  >;
   /** Amazon ASIN. */
   asin: string | null;
 }
