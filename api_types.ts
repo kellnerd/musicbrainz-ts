@@ -346,7 +346,7 @@ export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
 > extends RecordingBase, WithAnnotation, WithRels<Include> {
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  releases: $SubQuery<MinimalRelease[], "releases">;
+  releases: $SubQuery<MinimalReleaseWithGroup[], "releases">;
 }
 
 export interface ReleaseBase extends $EntityBase {
@@ -381,6 +381,9 @@ export interface ReleaseBase extends $EntityBase {
 export interface MinimalRelease extends ReleaseBase {
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
   media: $SubQuery<Medium[], "media" | "discids" | "recordings">;
+}
+
+export interface MinimalReleaseWithGroup extends MinimalRelease {
   "release-group": $SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
