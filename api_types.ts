@@ -324,7 +324,7 @@ export interface RecordingBase extends $EntityBase {
   /** Disambiguation comment, can be empty. */
   disambiguation: string;
   /** Recording length in milliseconds (integer). */
-  length: number;
+  length: number | null;
   /**
    * Release date of the earliest release which contains the recording.
    * Missing for standalone recordings or if no release has a date.
@@ -530,7 +530,7 @@ export interface Track<
   title: string;
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
-  length: number;
+  length: number | null;
   recording: $SubQuery<Recording, "recordings">;
 }
 
