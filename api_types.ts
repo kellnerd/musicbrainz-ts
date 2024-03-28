@@ -380,7 +380,7 @@ export interface ReleaseBase extends $EntityBase {
 
 export interface MinimalRelease extends ReleaseBase {
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
-  media: $SubQuery<Medium[], "media" | "discids" | "recordings">;
+  media: $SubQuery<MinimalMedium[], "media" | "discids">;
 }
 
 export interface MinimalReleaseWithGroup extends MinimalRelease {
@@ -496,20 +496,25 @@ export interface EntityAttribute {
   "value-id"?: MBID;
 }
 
-export interface Medium<Recording extends MinimalRecording = MinimalRecording> {
+export interface MinimalMedium {
   position: number;
   /** Medium title, can be empty. */
   title: string;
   "track-count": number;
-  /** Position of the first loaded track minus one, missing for an empty medium. */
-  "track-offset"?: $SubQuery<number, "recordings">;
   format: string | null;
   "format-id": MBID | null;
+  discs: $SubQuery<DiscId[], "discids">;
+}
+
+export interface Medium<
+  Recording extends MinimalRecording = MinimalRecording,
+> extends MinimalMedium {
+  /** Position of the first loaded track minus one, missing for an empty medium. */
+  "track-offset"?: $SubQuery<number, "recordings">;
   pregap?: $SubQuery<Track<Recording>, "recordings">;
   /** List of tracks, missing for an empty medium. */
   tracks?: $SubQuery<Track<Recording>[], "recordings">;
   "data-tracks"?: $SubQuery<Track<Recording>[], "recordings">;
-  discs: $SubQuery<DiscId[], "discids">;
 }
 
 export interface DiscId {
