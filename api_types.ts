@@ -296,7 +296,7 @@ export interface MinimalLabel extends MinimalEntity {
 
 export interface $Label<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalEntity, WithAnnotation, WithRels<Include> {
+> extends MinimalLabel, WithAnnotation, WithRels<Include> {
   country: IsoCountryCode | null;
   area: MinimalArea | null;
   "life-span": DatePeriod;
