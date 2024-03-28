@@ -16,7 +16,7 @@ export async function fetchTestdata(
   mbid: MBID,
   includes?: AnyInclude[],
 ): Promise<string> {
-  const result = await client.lookup(entityType, mbid, includes);
+  const result = await client.lookup(entityType, mbid, { inc: includes });
   const identifier = [entityType, mbid, ...(includes ?? [])]
     .join("_")
     .replaceAll(/\W/g, "_");

@@ -14,7 +14,7 @@ const client = new MusicBrainzClient();
 const group = await client.lookup(
   "artist",
   "83d91898-7763-47d7-b03b-b92132375c47",
-  ["artist-rels"],
+  { inc: ["artist-rels"] },
 );
 
 // Find the members of the group from its relationships.

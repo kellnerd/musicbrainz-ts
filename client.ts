@@ -32,6 +32,12 @@ export interface ClientOptions {
   userAgent?: string;
 }
 
+/** Options for a lookup request. */
+export interface LookupOptions<Include> {
+  /** Include parameters to request additional data. */
+  inc?: Include[];
+}
+
 /**
  * MusicBrainz API client.
  *
@@ -42,7 +48,7 @@ export interface ClientOptions {
  * // Lookup a group artist by MBID and include its artist relationships.
  * // Type of the result is affected by the specified include parameters.
  * const group = await client.lookup("artist",
- *   "83d91898-7763-47d7-b03b-b92132375c47", ["artist-rels"]);
+ *   "83d91898-7763-47d7-b03b-b92132375c47", { inc: ["artist-rels"] });
  *
  * // Find the members of the group from its relationships.
  * // Property `relations` only exists because a relationship include was specified.
@@ -77,9 +83,10 @@ export class MusicBrainzClient {
   lookup<Type extends EntityType, Include extends EntityIncludeMap[Type]>(
     entityType: Type,
     mbid: MBID,
-    inc: Include[] = [],
+    options: LookupOptions<Include> = {},
   ): Promise<EntityTypeMap<Include>[Type]> {
     assertMbid(mbid);
+    const { inc = [] } = options;
     return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
   }
 
