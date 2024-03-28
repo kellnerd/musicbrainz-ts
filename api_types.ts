@@ -346,7 +346,7 @@ export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
 > extends RecordingBase, WithAnnotation, WithRels<Include> {
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
-  releases: $SubQuery<MinimalReleaseWithGroup[], "releases">;
+  releases: $SubQuery<MinimalReleaseForRecording[], "releases">;
 }
 
 export interface ReleaseBase extends $EntityBase {
@@ -383,7 +383,8 @@ export interface MinimalRelease extends ReleaseBase {
   media: $SubQuery<MinimalMedium[], "media" | "discids">;
 }
 
-export interface MinimalReleaseWithGroup extends MinimalRelease {
+export interface MinimalReleaseForRecording extends MinimalRelease {
+  media: $SubQuery<MinimalMediumWithTracks[], "media" | "discids">;
   "release-group": $SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
@@ -506,6 +507,16 @@ export interface MinimalMedium {
   discs: $SubQuery<DiscId[], "discids">;
 }
 
+// TODO: Check recording which is used on a pregap/data track to see if these props can be present as well.
+export interface MinimalMediumWithTracks extends MinimalMedium {
+  /** Position of the first loaded track minus one. */
+  "track-offset": number;
+  pregap?: MinimalTrack;
+  /** List of associated tracks. */
+  tracks: MinimalTrack[];
+  "data-tracks"?: MinimalTrack[];
+}
+
 export interface Medium<
   Recording extends MinimalRecording = MinimalRecording,
 > extends MinimalMedium {
@@ -527,15 +538,18 @@ export interface DiscId {
   offsets: number[];
 }
 
-export interface Track<
-  Recording extends MinimalRecording = MinimalRecording,
-> extends EntityWithMbid {
+export interface MinimalTrack extends EntityWithMbid {
   position: number;
   number: string;
   title: string;
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number | null;
+}
+
+export interface Track<
+  Recording extends MinimalRecording = MinimalRecording,
+> extends MinimalTrack {
   recording: $SubQuery<Recording, "recordings">;
 }
 

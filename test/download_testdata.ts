@@ -75,6 +75,10 @@ export const lookupTestCases: LookupTestCase[] = [
   ["url", "73770827-4419-464f-a07e-d34231ed4391"],
   ["genre", "6d76ba14-94f3-4677-a153-9263f8d50f95"],
   ["artist", "83d91898-7763-47d7-b03b-b92132375c47"],
+  ["recording", "aaac56a9-5713-4dca-82f1-635f5daf0d51", [
+    "releases",
+    "discids",
+  ]],
 ];
 
 export function convertApiUrlToTestCase(
@@ -108,13 +112,14 @@ if (import.meta.main) {
 
   if (append) {
     for (const testCase of newTestCases) {
-      console.log(testCase);
+      console.log("Fetching", testCase);
       const code = await fetchTestdata(client, ...testCase);
       await output.write(encoder.encode(code));
     }
   } else {
     await output.write(encoder.encode(testdataImports));
     for (const testCase of lookupTestCases) {
+      console.log("Fetching", testCase);
       const code = await fetchTestdata(client, ...testCase);
       await output.write(encoder.encode(code));
     }
