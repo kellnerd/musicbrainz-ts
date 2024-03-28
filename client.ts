@@ -39,9 +39,9 @@ export interface LookupOptions<Include> {
   /** Include parameters to request additional data. */
   inc?: Include[];
   /** Filter included releases by their status. */
-  status?: Lowercase<ReleaseStatus>;
+  status?: Lowercase<ReleaseStatus>[];
   /** Filter included release groups (and their releases) by type. */
-  type?: Lowercase<ReleaseGroupType>;
+  type?: Lowercase<ReleaseGroupType>[];
 }
 
 /**
@@ -94,8 +94,8 @@ export class MusicBrainzClient {
     assertMbid(mbid);
     return this.get([entityType, mbid].join("/"), {
       inc: options.inc?.join("+"),
-      status: options.status,
-      type: options.type,
+      status: options.status?.join("|"),
+      type: options.type?.join("|"),
     });
   }
 
