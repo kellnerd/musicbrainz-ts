@@ -13,6 +13,8 @@ import type {
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
+import type { ReleaseStatus } from "./data/release.ts";
+import type { ReleaseGroupType } from "./data/release_group.ts";
 import { assertMbid, entityPlural } from "./utils/entity.ts";
 
 /** MusicBrainz API client configuration options. */
@@ -36,6 +38,10 @@ export interface ClientOptions {
 export interface LookupOptions<Include> {
   /** Include parameters to request additional data. */
   inc?: Include[];
+  /** Filter included releases by their status. */
+  status?: Lowercase<ReleaseStatus>;
+  /** Filter included release groups (and their releases) by type. */
+  type?: Lowercase<ReleaseGroupType>;
 }
 
 /**
@@ -86,8 +92,11 @@ export class MusicBrainzClient {
     options: LookupOptions<Include> = {},
   ): Promise<EntityTypeMap<Include>[Type]> {
     assertMbid(mbid);
-    const { inc = [] } = options;
-    return this.get([entityType, mbid].join("/"), { inc: inc.join("+") });
+    return this.get([entityType, mbid].join("/"), {
+      inc: options.inc?.join("+"),
+      status: options.status,
+      type: options.type,
+    });
   }
 
   /** Looks up the collection with the given MBID, including its contents. */
@@ -106,7 +115,7 @@ export class MusicBrainzClient {
    */
   async get(
     endpoint: string,
-    query?: Record<string, string | number>,
+    query?: Record<string, string | number | undefined>,
     // deno-lint-ignore no-explicit-any
   ): Promise<any> {
     const endpointUrl = new URL(endpoint, this.apiBaseUrl);
