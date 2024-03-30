@@ -79,6 +79,17 @@ export class MusicBrainzClient {
    *
    * You should identify your application to avoid being blocked:
    * https://wiki.musicbrainz.org/MusicBrainz_API/Rate_Limiting
+   *
+   * @example
+   * ```ts
+   * const client = new MusicBrainzClient({
+   *   app: {
+   *     name: "ExampleApp",
+   *     version: "1.2.3",
+   *     contact: "http://example.com/app",
+   *   },
+   * });
+   * ```
    */
   constructor(options: ClientOptions = {}) {
     this.apiBaseUrl = options.apiUrl ?? "https://musicbrainz.org/ws/2/";
