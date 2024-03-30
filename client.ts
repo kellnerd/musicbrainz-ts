@@ -27,11 +27,18 @@ export interface ClientOptions {
    */
   apiUrl?: string;
 
-  /**
-   * User-Agent header to identify your application.
-   * @example "MyAwesomeTagger/1.2.0 ( http://myawesometagger.example.com )"
-   */
-  userAgent?: string;
+  /** Information about your application, will be used to fill the user-agent. */
+  app?: AppInfo;
+}
+
+/** Information about the client application. */
+export interface AppInfo {
+  /** Name of the application. */
+  name: string;
+  /** Version of the application. */
+  version: string;
+  /** Contact URL or email for the application. */
+  contact?: string;
 }
 
 /** Options for a lookup request. */
@@ -70,7 +77,7 @@ export class MusicBrainzClient {
   /**
    * Creates a new MusicBrainz API client using the given options.
    *
-   * You should provide a meaningful user-agent to avoid being blocked:
+   * You should identify your application to avoid being blocked:
    * https://wiki.musicbrainz.org/MusicBrainz_API/Rate_Limiting
    */
   constructor(options: ClientOptions = {}) {
@@ -80,8 +87,13 @@ export class MusicBrainzClient {
       "Accept": "application/json",
     };
 
-    if (options.userAgent) {
-      this.#headers["User-Agent"] = options.userAgent;
+    if (options.app) {
+      const { name, version, contact } = options.app;
+      let userAgent = `${name}/${version}`;
+      if (contact) {
+        userAgent += ` ( ${contact} )`;
+      }
+      this.#headers["User-Agent"] = userAgent;
     }
   }
 
