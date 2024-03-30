@@ -119,8 +119,10 @@ export interface EntityWithMbid {
   id: MBID;
 }
 
-/** Optional properties which most entity types have in common. */
-export interface $EntityBase extends EntityWithMbid {
+/** Properties which most entity types have in common. */
+export interface MinimalEntity extends EntityWithMbid {
+  /** Disambiguation comment, can be empty. */
+  disambiguation: string;
   /**
    * Alias names of the entity.
    *
@@ -151,13 +153,19 @@ export interface $EntityBase extends EntityWithMbid {
   "user-genres"?: $SubQuery<GenreUserTag[], "user-genres">;
 }
 
-/** Properties which many entity types have in common. */
-export interface MinimalEntity extends $EntityBase {
+/** Entity which has a name and a sort name. */
+export interface WithSortName {
   /** Name of the entity. */
   name: string;
-  /** Disambiguation comment, can be empty. */
-  disambiguation: string;
-  type: string | null;
+  /** Sort name of the entity. */
+  "sort-name": string;
+}
+
+/** Entity type can have a more specific subtype. */
+export interface WithType<Type extends string = string> {
+  /** Subtype of the entity. */
+  type: Type | null;
+  /** MBID of the entity's subtype. */
   "type-id": MBID | null;
 }
 
@@ -178,9 +186,7 @@ export interface WithRels<
   >;
 }
 
-export interface MinimalArea extends MinimalEntity {
-  /** Sort name of the entity. */
-  "sort-name": string;
+export interface MinimalArea extends MinimalEntity, WithSortName, WithType {
   /** ISO 3166-1 country codes, for countries only. */
   "iso-3166-1-codes"?: IsoCountryCode[];
   "iso-3166-2-codes"?: IsoCountryCode[];
@@ -193,11 +199,8 @@ export interface $Area<
   "life-span": DatePeriod;
 }
 
-export interface MinimalArtist extends MinimalEntity {
-  /** Sort name of the entity. */
-  "sort-name": string;
-  type: ArtistType | null; // override
-}
+export interface MinimalArtist
+  extends MinimalEntity, WithSortName, WithType<ArtistType> {}
 
 export interface $Artist<
   Include extends IncludeParameter = IncludeParameter,
@@ -228,7 +231,9 @@ export interface CollectionBase<
   name: string;
   /** Owner of the collection. */
   editor: string;
+  /** Type of the collection. */
   type: string;
+  /** MBID of the collection type. */
   "type-id": MBID;
   /** Type of the collected entities. */
   "entity-type": SnakeCase<ContentType>;
@@ -260,7 +265,9 @@ export type CollectionWithContents<
   ContentType extends CollectableEntityType = CollectableEntityType,
 > = WithIncludes<CollectionTypeMap[ContentType], never>;
 
-export interface MinimalEvent extends MinimalEntity {
+export interface MinimalEvent extends MinimalEntity, WithType {
+  /** Name of the event. */
+  name: string;
   time: string;
   setlist: string;
   cancelled: boolean;
@@ -279,7 +286,9 @@ export interface $Genre extends EntityWithMbid {
   disambiguation: string;
 }
 
-export interface MinimalInstrument extends MinimalEntity {
+export interface MinimalInstrument extends MinimalEntity, WithType {
+  /** Name of the instrument. */
+  name: string;
   /** Description of the instrument. */
   description: string;
 }
@@ -288,9 +297,7 @@ export interface $Instrument<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalInstrument, WithAnnotation, WithRels<Include> {}
 
-export interface MinimalLabel extends MinimalEntity {
-  /** Sort name of the entity. */
-  "sort-name": string;
+export interface MinimalLabel extends MinimalEntity, WithSortName, WithType {
   "label-code": number | null;
 }
 
@@ -305,7 +312,9 @@ export interface $Label<
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
-export interface MinimalPlace extends MinimalEntity {
+export interface MinimalPlace extends MinimalEntity, WithType {
+  /** Name of the place. */
+  name: string;
   address: string;
   area: MinimalArea | null;
   /** Coordinates of the place (floating point). */
@@ -319,10 +328,9 @@ export interface $Place<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalPlace, WithAnnotation, WithRels<Include> {}
 
-export interface RecordingBase extends $EntityBase {
+export interface RecordingBase extends MinimalEntity {
+  /** Title of the recording. */
   title: string;
-  /** Disambiguation comment, can be empty. */
-  disambiguation: string;
   /** Recording length in milliseconds (integer). */
   length: number | null;
   /**
@@ -349,11 +357,9 @@ export interface $Recording<
   releases: $SubQuery<MinimalReleaseForRecording[], "releases">;
 }
 
-export interface ReleaseBase extends $EntityBase {
+export interface ReleaseBase extends MinimalEntity {
   /** Title of the release. */
   title: string;
-  /** Disambiguation comment, can be empty. */
-  disambiguation: string;
   date?: IsoDate;
   country?: IsoCountryCode | null;
   /** Release dates and areas. */
@@ -402,13 +408,16 @@ export interface $Release<
   asin: string | null;
 }
 
-export interface ReleaseGroupBase extends $EntityBase {
+export interface ReleaseGroupBase extends MinimalEntity {
+  /** Title of the release group. */
   title: string;
-  /** Disambiguation comment, can be empty. */
-  disambiguation: string;
+  /** Primary type of the release group. */
   "primary-type": ReleaseGroupPrimaryType | null;
+  /** MBID of the primary type. */
   "primary-type-id": MBID | null;
+  /** Secondary types of the release group. */
   "secondary-types": ReleaseGroupSecondaryType[];
+  /** MBIDs of the secondary types. */
   "secondary-type-ids": MBID[];
   /**
    * Release date of the earliest release inside the release group.
@@ -435,7 +444,10 @@ export interface $ReleaseGroup<
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
-export type MinimalSeries = MinimalEntity;
+export interface MinimalSeries extends MinimalEntity, WithType {
+  /** Name of the series. */
+  name: string;
+}
 
 export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
@@ -447,16 +459,14 @@ export interface $Url<
   resource: string;
 }
 
-export interface MinimalWork extends $EntityBase {
+export interface MinimalWork extends MinimalEntity, WithType {
+  /** Title of the work. */
   title: string;
-  disambiguation: string;
   iswcs: string[];
   attributes: EntityAttribute[];
   languages: IsoLanguageCode[];
   /** @deprecated */
   language: IsoLanguageCode | null;
-  type: string | null;
-  "type-id": MBID | null;
 }
 
 export interface $Work<
@@ -464,12 +474,11 @@ export interface $Work<
 > extends MinimalWork, WithAnnotation, WithRels<Include> {}
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
-export interface Alias<Type extends string = string> extends DatePeriod {
-  name: string;
-  "sort-name": string;
-  type: Type | null;
-  "type-id": MBID | null;
+export interface Alias<Type extends string = string>
+  extends DatePeriod, WithSortName, WithType<Type> {
+  /** Locale of the name. */
   locale: Locale | null;
+  /** Indicates a primary name for the given language. */
   primary: boolean | null;
 }
 
@@ -491,9 +500,13 @@ export interface DatePeriod {
 }
 
 export interface EntityAttribute {
+  /** Name of the attribute type. */
   type: string;
+  /** MBID of the attribute type. */
   "type-id": MBID;
+  /** Value of the attribute. */
   value: string;
+  /** MBID of the attribute value (if it is not free text). */
   "value-id"?: MBID;
 }
 
