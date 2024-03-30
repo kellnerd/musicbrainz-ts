@@ -34,10 +34,10 @@ export type MBID = string;
 /** ISO 3166-1 (two letter), 3166-2 or 3166-3 (three letter) code of a country. */
 export type IsoCountryCode = string;
 
-/** ISO 639 (three letter) code of a language. */
+/** ISO 639-3 (three letter) code of a language. */
 export type IsoLanguageCode = string;
 
-/** ISO (four letter) code of a script. */
+/** ISO 15924 (four letter) code of a script. */
 export type IsoScriptCode = string;
 
 /** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM` or `YYYY`). */
@@ -165,7 +165,7 @@ export interface WithSortName {
 export interface WithType<Type extends string = string> {
   /** Subtype of the entity. */
   type: Type | null;
-  /** MBID of the entity's subtype. */
+  /** MBID of the entity's {@linkcode type}. */
   "type-id": MBID | null;
 }
 
@@ -189,13 +189,16 @@ export interface WithRels<
 export interface MinimalArea extends MinimalEntity, WithSortName, WithType {
   /** ISO 3166-1 country codes, for countries only. */
   "iso-3166-1-codes"?: IsoCountryCode[];
+  /** ISO 3166-2 codes for subdivisions of countries. */
   "iso-3166-2-codes"?: IsoCountryCode[];
+  /** ISO 3166-3 historical country codes. */
   "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
 export interface $Area<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArea, WithAnnotation, WithRels<Include> {
+  /** Date period of the area's existence. */
   "life-span": DatePeriod;
 }
 
@@ -205,22 +208,35 @@ export interface MinimalArtist
 export interface $Artist<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArtist, WithAnnotation, WithRels<Include> {
+  /** Gender the artist identifies with. */
   gender: Gender | null;
+  /** MBID of the {@linkcode gender}. */
   "gender-id": MBID | null;
+  /** Main area the artist identifies with. */
   area: MinimalArea | null;
+  /** Country the artist identifies with, derived from {@linkcode area}. */
   country: IsoCountryCode | null;
+  /** Date of birth and death for persons, period of existence for groups. */
   "life-span": DatePeriod;
+  /** Place of birth for persons, place of formation for groups. */
   "begin-area": MinimalArea | null;
   /** @deprecated See [MBS-10826](https://tickets.metabrainz.org/browse/MBS-10826). */
   "begin_area"?: MinimalArea | null;
+  /** Place of death for persons, place of dissolution for groups. */
   "end-area": MinimalArea | null;
   /** @deprecated See [MBS-10826](https://tickets.metabrainz.org/browse/MBS-10826). */
   "end_area"?: MinimalArea | null;
+  /** Interested Parties Information (IPI) codes. */
   ipis: string[];
+  /** International Standard Name Identifier (ISNI) codes. */
   isnis: string[];
+  /** Recordings which are credited to this artist. */
   recordings: $SubQuery<MinimalRecording[], "recordings">;
+  /** Releases which are credited to this artist. */
   releases: $SubQuery<MinimalRelease[], "releases">;
+  /** Release groups which are credited to this artist. */
   "release-groups": $SubQuery<MinimalReleaseGroup[], "release-groups">;
+  /** Works which were created or performed by this artist. */
   works: $SubQuery<MinimalWork[], "works">;
 }
 
@@ -233,7 +249,7 @@ export interface CollectionBase<
   editor: string;
   /** Type of the collection. */
   type: string;
-  /** MBID of the collection type. */
+  /** MBID of the collection {@linkcode type}. */
   "type-id": MBID;
   /** Type of the collected entities. */
   "entity-type": SnakeCase<ContentType>;
@@ -266,16 +282,24 @@ export type CollectionWithContents<
 > = WithIncludes<CollectionTypeMap[ContentType], never>;
 
 export interface MinimalEvent extends MinimalEntity, WithType {
-  /** Name of the event. */
+  /** Official (or descriptive) name of the event. */
   name: string;
+  /** Start time of the event. */
   time: string;
+  /**
+   * List of songs performed, optionally including links to artists and works.
+   *
+   * [Documentation of the syntax](https://wiki.musicbrainz.org/Event/Setlist)
+   */
   setlist: string;
+  /** Indicates whether the event took place or not. */
   cancelled: boolean;
 }
 
 export interface $Event<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalEvent, WithAnnotation, WithRels<Include> {
+  /** Indicates when the event started and finished. */
   "life-span": DatePeriod;
 }
 
@@ -289,7 +313,7 @@ export interface $Genre extends EntityWithMbid {
 export interface MinimalInstrument extends MinimalEntity, WithType {
   /** Name of the instrument. */
   name: string;
-  /** Description of the instrument. */
+  /** Brief description of the main characteristics of the instrument. */
   description: string;
 }
 
@@ -298,26 +322,35 @@ export interface $Instrument<
 > extends MinimalInstrument, WithAnnotation, WithRels<Include> {}
 
 export interface MinimalLabel extends MinimalEntity, WithSortName, WithType {
+  /** Label code (LC) of the record label. */
   "label-code": number | null;
 }
 
 export interface $Label<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalLabel, WithAnnotation, WithRels<Include> {
-  country: IsoCountryCode | null;
+  /** Area of origin. */
   area: MinimalArea | null;
+  /** Country of origin, derived from {@linkcode area}. */
+  country: IsoCountryCode | null;
+  /** Date period of the labels existence. */
   "life-span": DatePeriod;
+  /** Interested Parties Information (IPI) codes. */
   ipis: string[];
+  /** International Standard Name Identifier (ISNI) codes. */
   isnis: string[];
+  /** Releases which were released under this imprint/label. */
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
 export interface MinimalPlace extends MinimalEntity, WithType {
-  /** Name of the place. */
+  /** Official name of the place. */
   name: string;
+  /** Address of the place (using the standard format for its country). */
   address: string;
+  /** Area in which the place is located. */
   area: MinimalArea | null;
-  /** Coordinates of the place (floating point). */
+  /** Geographic coordinates of the place (floating point). */
   coordinates: {
     latitude: number;
     longitude: number;
@@ -338,68 +371,90 @@ export interface RecordingBase extends MinimalEntity {
    * Missing for standalone recordings or if no release has a date.
    */
   "first-release-date"?: IsoDate;
+  /** Indicates whether the recording is a video. */
   video: boolean;
+  /** International Standard Recording Code (ISRC) codes. */
   isrcs: $SubQuery<string[], "isrcs">;
 }
 
 export interface MinimalRecording extends RecordingBase {
+  /** The artist(s) that the recording is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
 }
 
 export interface MinimalRecordingWithRels extends MinimalRecording {
+  /** Relationships to other entities. */
   relations: $SubQuery<Relationship[], "recording-level-rels">;
 }
 
 export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
 > extends RecordingBase, WithAnnotation, WithRels<Include> {
+  /** The artist(s) that the recording is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  /** Releases which feature this recording. */
   releases: $SubQuery<MinimalReleaseForRecording[], "releases">;
 }
 
 export interface ReleaseBase extends MinimalEntity {
   /** Title of the release. */
   title: string;
+  /** Date from the earliest release event. */
   date?: IsoDate;
+  /** Country from the earliest release event. */
   country?: IsoCountryCode | null;
-  /** Release dates and areas. */
+  /** All release events with dates and countries. */
   "release-events"?: ReleaseEvent[];
   /** Barcode of the release, can be empty (no barcode) or `null` (unset). */
   barcode: string | null;
+  /** Outermost physical packaging that the release is sold or distributed in. */
   packaging: ReleasePackaging | null;
+  /** MBID of the {@linkcode packaging}. */
   "packaging-id": MBID | null;
+  /** Status of the release. */
   status: ReleaseStatus | null;
+  /** MBID of the {@linkcode status}. */
   "status-id": MBID | null;
-  /** Language and script of title and tracklist. */
+  /** Language and script used for the tracklist. */
   "text-representation": {
     language: IsoLanguageCode | null;
     script: IsoScriptCode | null;
   };
   /** Data quality rating. */
   quality: DataQuality;
+  /** Information about the available artwork in the CAA. */
   "cover-art-archive"?: CoverArtArchiveInfo;
 }
 
 export interface MinimalRelease extends ReleaseBase {
+  /** The artist(s) that the release is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
+  /** Media which the release includes. */
   media: $SubQuery<MinimalMedium[], "media" | "discids">;
 }
 
 export interface MinimalReleaseForRecording extends MinimalRelease {
+  /** Media which the release includes. */
   media: $SubQuery<MinimalMediumWithTracks[], "media" | "discids">;
+  /** Release group to which this release belongs. */
   "release-group": $SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
 export interface $Release<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseBase, WithAnnotation, WithRels<Include> {
+  /** The artist(s) that the release is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  /** Labels which issued this release and the catalog numbers. */
   "label-info": $SubQuery<LabelInfo[], "labels">;
+  /** Media which the release includes. */
   media: $SubQuery<
     Medium<MinimalRecordingWithRels>[],
     "media" | "discids" | "recordings"
   >;
+  /** Release group to which this release belongs. */
   "release-group": $SubQuery<MinimalReleaseGroupWithRels, "release-groups">;
+  /** Collections which contain this release. */
   collections: $SubQuery<
     MinimalCollection<"release">[],
     "collections" | "user-collections"
@@ -413,11 +468,11 @@ export interface ReleaseGroupBase extends MinimalEntity {
   title: string;
   /** Primary type of the release group. */
   "primary-type": ReleaseGroupPrimaryType | null;
-  /** MBID of the primary type. */
+  /** MBID of the {@linkcode primary-type}. */
   "primary-type-id": MBID | null;
   /** Secondary types of the release group. */
   "secondary-types": ReleaseGroupSecondaryType[];
-  /** MBIDs of the secondary types. */
+  /** MBIDs of the {@linkcode secondary-types}. */
   "secondary-type-ids": MBID[];
   /**
    * Release date of the earliest release inside the release group.
@@ -427,6 +482,7 @@ export interface ReleaseGroupBase extends MinimalEntity {
 }
 
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
+  /** The artist(s) that the release group is primarily credited to. */
   "artist-credit":
     | $SubQuery<ArtistCredit[], "artist-credits">
     | $SubQuery<null, "artists">; // probably a bug in the MBS serializer
@@ -434,13 +490,16 @@ export interface MinimalReleaseGroup extends ReleaseGroupBase {
 }
 
 export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
+  /** Relationships to other entities. */
   relations: $SubQuery<Relationship[], "release-group-level-rels">;
 }
 
 export interface $ReleaseGroup<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseGroupBase, WithAnnotation, WithRels<Include> {
+  /** The artist(s) that the release group is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
+  /** Releases which belong to this release group. */
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
@@ -456,14 +515,18 @@ export interface $Series<
 export interface $Url<
   Include extends IncludeParameter = IncludeParameter,
 > extends EntityWithMbid, WithRels<Include> {
+  /** Underlying URL. */
   resource: string;
 }
 
 export interface MinimalWork extends MinimalEntity, WithType {
-  /** Title of the work. */
+  /** Canonical title of the work, expressed in its original language. */
   title: string;
+  /** International Standard Musical Work Code (ISWC) codes. */
   iswcs: string[];
+  /** Other attributes of the work. */
   attributes: EntityAttribute[];
+  /** Language(s) used in the lyrics for this work. */
   languages: IsoLanguageCode[];
   /** @deprecated */
   language: IsoLanguageCode | null;
@@ -474,6 +537,7 @@ export interface $Work<
 > extends MinimalWork, WithAnnotation, WithRels<Include> {}
 
 // TODO: Type = "Search hint", "Legal name" etc. (depending on entity type)
+/** Alternative name (alias) of an entity. */
 export interface Alias<Type extends string = string>
   extends DatePeriod, WithSortName, WithType<Type> {
   /** Locale of the name. */
@@ -482,14 +546,17 @@ export interface Alias<Type extends string = string>
   primary: boolean | null;
 }
 
+/** Artist name as credited (on a release). */
 export interface ArtistCredit {
   /** Credited name of the artist. */
   name: string;
+  /** Associated artist. */
   artist: MinimalArtist;
   /** Join phrase between this artist and the next artist. */
   joinphrase: string;
 }
 
+/** Date period. */
 export interface DatePeriod {
   /** Begin date. */
   begin: IsoDate | null;
@@ -499,24 +566,30 @@ export interface DatePeriod {
   ended: boolean;
 }
 
+/** Dynamic attribute of an entity. */
 export interface EntityAttribute {
   /** Name of the attribute type. */
   type: string;
-  /** MBID of the attribute type. */
+  /** MBID of the attribute {@linkcode type}. */
   "type-id": MBID;
   /** Value of the attribute. */
   value: string;
-  /** MBID of the attribute value (if it is not free text). */
+  /** MBID of the attribute {@linkcode value} (if it is not free text). */
   "value-id"?: MBID;
 }
 
 export interface MinimalMedium {
+  /** Position of the medium, numbering usually starts with one. */
   position: number;
   /** Medium title, can be empty. */
   title: string;
+  /** Number of tracks on the medium. */
   "track-count": number;
+  /** Name of the medium format. */
   format: string | null;
+  /** MBID of the medium {@linkcode format}. */
   "format-id": MBID | null;
+  /** Disc ID (for CD-based formats). */
   discs: $SubQuery<DiscId[], "discids">;
 }
 
@@ -530,42 +603,54 @@ export interface MinimalMediumWithTracks extends MinimalMedium {
   "data-tracks"?: MinimalTrack[];
 }
 
+/** Medium which is included in a release. */
 export interface Medium<
   Recording extends MinimalRecording = MinimalRecording,
 > extends MinimalMedium {
   /** Position of the first loaded track minus one, missing for an empty medium. */
   "track-offset"?: $SubQuery<number, "recordings">;
+  /** Pregap track on a CD-based format. */
   pregap?: $SubQuery<Track<Recording>, "recordings">;
   /** List of tracks, missing for an empty medium. */
   tracks?: $SubQuery<Track<Recording>[], "recordings">;
+  /** Data tracks on a CD-based format. */
   "data-tracks"?: $SubQuery<Track<Recording>[], "recordings">;
 }
 
+/** Disc ID and table of contents (TOC) for a CD-based medium format. */
 export interface DiscId {
   /** Base64 encoded disc ID. */
   id: string;
   /** Total number of sectors. */
   sectors: number;
+  /** Number of tracks/offsets in the TOC. */
   "offset-count": number;
-  /** Offsets of the tracks in sectors. */
+  /** Offsets of the tracks (counted in sectors). */
   offsets: number[];
 }
 
 export interface MinimalTrack extends EntityWithMbid {
+  /** Position of the track on the medium, numbering usually starts with one. */
   position: number;
+  /** Track number, can follow vinyl style (letter prefix indicates side) or custom style. */
   number: string;
+  /** Title of the track on the release. */
   title: string;
+  /** The artist(s) that the track is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
   /** Track length in milliseconds (integer). */
   length: number | null;
 }
 
+/** Track on a release. */
 export interface Track<
   Recording extends MinimalRecording = MinimalRecording,
 > extends MinimalTrack {
+  /** Associated recording of the track. */
   recording: $SubQuery<Recording, "recordings">;
 }
 
+/** Release event of a release. */
 export interface ReleaseEvent {
   /** Release date. */
   date: IsoDate | "";
@@ -573,11 +658,15 @@ export interface ReleaseEvent {
   area: MinimalArea | null;
 }
 
+/** Release label and catalog number. */
 export interface LabelInfo {
+  /** Label/Imprint which issued the release. */
   label: MinimalLabel | null;
+  /** Corresponding catalog number used by the {@linkcode label}. */
   "catalog-number": string | null;
 }
 
+/** Information about available artwork in the Cover Art Archive. */
 export interface CoverArtArchiveInfo {
   /** Number of available cover art images. */
   count: number;
@@ -603,18 +692,22 @@ export interface Rating extends UserRating {
   "votes-count": number;
 }
 
+/** Folksonomy tag. */
 export interface UserTag {
   /** Name of the tag (lower case). */
   name: string;
 }
 
+/** Folksonomy tag with usage count. */
 export interface Tag extends UserTag {
   /** Number of users which have used the tag for the entity. */
   count: number;
 }
 
+/** Genre tag. */
 export type GenreUserTag = $Genre;
 
+/** Genre tag with usage count. */
 export interface GenreTag extends GenreUserTag {
   /** Number of users which have used the genre tag for the entity. */
   count: number;
@@ -626,7 +719,7 @@ export interface RelationshipBase<TargetType extends RelatableEntityType> {
   "target-type": SnakeCase<TargetType>;
   /** Name of the relationship type. */
   type: string;
-  /** MBID of the relationship type. */
+  /** MBID of the relationship {@linkcode type}. */
   "type-id": MBID;
   /**
    * Direction of the relationship.
