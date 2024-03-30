@@ -164,28 +164,6 @@ export class MusicBrainzClient {
     }
   }
 
-  /**
-   * Sends the given JSON data to the given `POST` endpoint.
-   *
-   * This method should only be directly called for unsupported endpoints.
-   */
-  // deno-lint-ignore no-explicit-any
-  async post(endpoint: string, json: any): Promise<any> {
-    const endpointUrl = new URL(endpoint, this.apiBaseUrl);
-    const response = await this.#request(endpointUrl, {
-      method: "POST",
-      headers: this.#headers,
-      body: JSON.stringify(json),
-    });
-
-    const data = await response.json();
-    if (isError(data)) {
-      throw new ApiError(data.error, response.status);
-    } else {
-      return data;
-    }
-  }
-
   async #request(url: URL, init?: RequestInit): Promise<Response> {
     await this.#rateLimitDelay;
 
