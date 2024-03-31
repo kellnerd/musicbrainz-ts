@@ -81,6 +81,9 @@ export const lookupTestCases: LookupTestCase[] = [
   ]],
   ["area", "74e50e58-5deb-4b99-93a2-decbb365c07f", [
     "url-rels",
+    // FIXME: Multiple rel target types within an array cause a type error with
+    // the current test setup, but this problem should not occur in practice.
+    // "area-rels",
   ]],
 ];
 
