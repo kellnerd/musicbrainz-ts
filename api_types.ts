@@ -110,7 +110,7 @@ export type MinimalEntityTypeMap = {
   "release-group": MinimalReleaseGroup;
   series: MinimalSeries;
   work: MinimalWork;
-  url: $Url;
+  url: MinimalUrl;
 };
 
 /** Entity with an MBID. */
@@ -512,12 +512,14 @@ export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalSeries, WithAnnotation, WithRels<Include> {}
 
-export interface $Url<
-  Include extends IncludeParameter = IncludeParameter,
-> extends EntityWithMbid, WithRels<Include> {
+export interface MinimalUrl extends EntityWithMbid {
   /** Underlying URL. */
   resource: string;
 }
+
+export interface $Url<
+  Include extends IncludeParameter = IncludeParameter,
+> extends MinimalUrl, WithRels<Include> {};
 
 export interface MinimalWork extends MinimalEntity, WithType {
   /** Canonical title of the work, expressed in its original language. */
