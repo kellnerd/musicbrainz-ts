@@ -81,6 +81,7 @@ export const lookupTestCases: LookupTestCase[] = [
   ]],
   ["area", "74e50e58-5deb-4b99-93a2-decbb365c07f", [
     "url-rels",
+    "area-rels",
   ]],
 ];
 
