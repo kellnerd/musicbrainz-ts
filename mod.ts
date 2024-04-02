@@ -1,4 +1,4 @@
-export { type ClientOptions, MusicBrainzClient } from "./client.ts";
+export * from "./client.ts";
 export { ApiError } from "./error.ts";
 export type {
   AnyInclude,
