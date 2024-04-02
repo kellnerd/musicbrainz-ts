@@ -186,6 +186,7 @@ export interface WithRels<
   >;
 }
 
+/** Minimal Area entity. */
 export interface MinimalArea extends MinimalEntity, WithSortName, WithType {
   /** ISO 3166-1 country codes, for countries only. */
   "iso-3166-1-codes"?: IsoCountryCode[];
@@ -195,6 +196,7 @@ export interface MinimalArea extends MinimalEntity, WithSortName, WithType {
   "iso-3166-3-codes"?: IsoCountryCode[];
 }
 
+/** Internal Area entity (with sub-queries). */
 export interface $Area<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArea, WithAnnotation, WithRels<Include> {
@@ -202,9 +204,11 @@ export interface $Area<
   "life-span": DatePeriod;
 }
 
+/** Minimal Artist entity. */
 export interface MinimalArtist
   extends MinimalEntity, WithSortName, WithType<ArtistType> {}
 
+/** Internal Artist entity (with sub-queries). */
 export interface $Artist<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalArtist, WithAnnotation, WithRels<Include> {
@@ -240,6 +244,7 @@ export interface $Artist<
   works: $SubQuery<MinimalWork[], "works">;
 }
 
+/** Basic properties of a Collection entity. */
 export interface CollectionBase<
   ContentType extends CollectableEntityType,
 > extends EntityWithMbid {
@@ -255,6 +260,7 @@ export interface CollectionBase<
   "entity-type": SnakeCase<ContentType>;
 }
 
+/** Maps content entity types to appropriately typed minimal collections. */
 export type MinimalCollectionTypeMap = {
   [ContentType in CollectableEntityType]:
     & {
@@ -264,10 +270,12 @@ export type MinimalCollectionTypeMap = {
     & CollectionBase<ContentType>;
 };
 
+/** Minimal Collection entity (without contents). */
 export type MinimalCollection<
   ContentType extends CollectableEntityType = CollectableEntityType,
 > = MinimalCollectionTypeMap[ContentType];
 
+/** Maps content entity types to appropriately typed collections. */
 export type CollectionTypeMap = {
   [ContentType in CollectableEntityType]:
     & {
@@ -277,10 +285,12 @@ export type CollectionTypeMap = {
     & MinimalCollection<ContentType>;
 };
 
+/** Collection entity with contents of the given type. */
 export type CollectionWithContents<
   ContentType extends CollectableEntityType = CollectableEntityType,
 > = WithIncludes<CollectionTypeMap[ContentType], never>;
 
+/** Minimal Event entity. */
 export interface MinimalEvent extends MinimalEntity, WithType {
   /** Official (or descriptive) name of the event. */
   name: string;
@@ -296,6 +306,7 @@ export interface MinimalEvent extends MinimalEntity, WithType {
   cancelled: boolean;
 }
 
+/** Internal Event entity (with sub-queries). */
 export interface $Event<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalEvent, WithAnnotation, WithRels<Include> {
@@ -303,6 +314,7 @@ export interface $Event<
   "life-span": DatePeriod;
 }
 
+/** Internal Genre entity. */
 export interface $Genre extends EntityWithMbid {
   /** Name of the corresponding tag (lower case). */
   name: string;
@@ -310,6 +322,7 @@ export interface $Genre extends EntityWithMbid {
   disambiguation: string;
 }
 
+/** Minimal Instrument entity. */
 export interface MinimalInstrument extends MinimalEntity, WithType {
   /** Name of the instrument. */
   name: string;
@@ -317,15 +330,18 @@ export interface MinimalInstrument extends MinimalEntity, WithType {
   description: string;
 }
 
+/** Internal Instrument entity (with sub-queries). */
 export interface $Instrument<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalInstrument, WithAnnotation, WithRels<Include> {}
 
+/** Minimal Label entity. */
 export interface MinimalLabel extends MinimalEntity, WithSortName, WithType {
   /** Label code (LC) of the record label. */
   "label-code": number | null;
 }
 
+/** Internal Label entity (with sub-queries). */
 export interface $Label<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalLabel, WithAnnotation, WithRels<Include> {
@@ -343,6 +359,7 @@ export interface $Label<
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
+/** Minimal Place entity. */
 export interface MinimalPlace extends MinimalEntity, WithType {
   /** Official name of the place. */
   name: string;
@@ -357,10 +374,12 @@ export interface MinimalPlace extends MinimalEntity, WithType {
   } | null;
 }
 
+/** Internal Place entity (with sub-queries). */
 export interface $Place<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalPlace, WithAnnotation, WithRels<Include> {}
 
+/** Basic properties of a Recording entity. */
 export interface RecordingBase extends MinimalEntity {
   /** Title of the recording. */
   title: string;
@@ -377,16 +396,19 @@ export interface RecordingBase extends MinimalEntity {
   isrcs: $SubQuery<string[], "isrcs">;
 }
 
+/** Minimal Recording entity. */
 export interface MinimalRecording extends RecordingBase {
   /** The artist(s) that the recording is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
 }
 
+/** Recording entity with relationships (in Release lookups). */
 export interface MinimalRecordingWithRels extends MinimalRecording {
   /** Relationships to other entities. */
   relations: $SubQuery<Relationship[], "recording-level-rels">;
 }
 
+/** Internal Recording entity (with sub-queries). */
 export interface $Recording<
   Include extends IncludeParameter = IncludeParameter,
 > extends RecordingBase, WithAnnotation, WithRels<Include> {
@@ -396,6 +418,7 @@ export interface $Recording<
   releases: $SubQuery<MinimalReleaseForRecording[], "releases">;
 }
 
+/** Basic properties of a Release entity. */
 export interface ReleaseBase extends MinimalEntity {
   /** Title of the release. */
   title: string;
@@ -426,6 +449,7 @@ export interface ReleaseBase extends MinimalEntity {
   "cover-art-archive"?: CoverArtArchiveInfo;
 }
 
+/** Minimal Release entity. */
 export interface MinimalRelease extends ReleaseBase {
   /** The artist(s) that the release is primarily credited to. */
   "artist-credit": $SubQuery<ArtistCredit[], "artist-credits">;
@@ -433,6 +457,7 @@ export interface MinimalRelease extends ReleaseBase {
   media: $SubQuery<MinimalMedium[], "media" | "discids">;
 }
 
+/** Release entity in Recording lookups. */
 export interface MinimalReleaseForRecording extends MinimalRelease {
   /** Media which the release includes. */
   media: $SubQuery<MinimalMediumWithTracks[], "media" | "discids">;
@@ -440,6 +465,7 @@ export interface MinimalReleaseForRecording extends MinimalRelease {
   "release-group": $SubQuery<MinimalReleaseGroup, "release-groups">;
 }
 
+/** Internal Release entity (with sub-queries). */
 export interface $Release<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseBase, WithAnnotation, WithRels<Include> {
@@ -463,6 +489,7 @@ export interface $Release<
   asin: string | null;
 }
 
+/** Basic properties of a Release Group entity. */
 export interface ReleaseGroupBase extends MinimalEntity {
   /** Title of the release group. */
   title: string;
@@ -481,6 +508,7 @@ export interface ReleaseGroupBase extends MinimalEntity {
   "first-release-date": IsoDate | "";
 }
 
+/** Minimal Release Group entity. */
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
   /** The artist(s) that the release group is primarily credited to. */
   "artist-credit":
@@ -489,11 +517,13 @@ export interface MinimalReleaseGroup extends ReleaseGroupBase {
   releases: $SubQuery<[], "releases">; // always empty for nested release groups
 }
 
+/** Release Group entity with relationships (in Release lookups). */
 export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
   /** Relationships to other entities. */
   relations: $SubQuery<Relationship[], "release-group-level-rels">;
 }
 
+/** Internal ReleaseGroup entity (with sub-queries). */
 export interface $ReleaseGroup<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseGroupBase, WithAnnotation, WithRels<Include> {
@@ -503,24 +533,29 @@ export interface $ReleaseGroup<
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
 
+/** Minimal Series entity. */
 export interface MinimalSeries extends MinimalEntity, WithType {
   /** Name of the series. */
   name: string;
 }
 
+/** Internal Series entity (with sub-queries). */
 export interface $Series<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalSeries, WithAnnotation, WithRels<Include> {}
 
+/** Minimal Url entity. */
 export interface MinimalUrl extends EntityWithMbid {
   /** Underlying URL. */
   resource: string;
 }
 
+/** Internal Url entity (with sub-queries). */
 export interface $Url<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalUrl, WithRels<Include> {};
 
+/** Minimal Work entity. */
 export interface MinimalWork extends MinimalEntity, WithType {
   /** Canonical title of the work, expressed in its original language. */
   title: string;
@@ -534,6 +569,7 @@ export interface MinimalWork extends MinimalEntity, WithType {
   language: IsoLanguageCode | null;
 }
 
+/** Internal Work entity (with sub-queries). */
 export interface $Work<
   Include extends IncludeParameter = IncludeParameter,
 > extends MinimalWork, WithAnnotation, WithRels<Include> {}
@@ -580,6 +616,7 @@ export interface EntityAttribute {
   "value-id"?: MBID;
 }
 
+/** Minimal medium entity. */
 export interface MinimalMedium {
   /** Position of the medium, numbering usually starts with one. */
   position: number;
@@ -596,6 +633,7 @@ export interface MinimalMedium {
 }
 
 // TODO: Check recording which is used on a pregap/data track to see if these props can be present as well.
+/** Minimal medium entity with minimal tracks. */
 export interface MinimalMediumWithTracks extends MinimalMedium {
   /** Position of the first loaded track minus one. */
   "track-offset": number;
@@ -631,6 +669,7 @@ export interface DiscId {
   offsets: number[];
 }
 
+/** Minimal track entity. */
 export interface MinimalTrack extends EntityWithMbid {
   /** Position of the track on the medium, numbering usually starts with one. */
   position: number;
@@ -747,6 +786,7 @@ export interface RelationshipBase<TargetType extends RelatableEntityType> {
   "target-credit": string;
 }
 
+/** Maps target entity types to appropriately typed relationships. */
 export type RelationshipTypeMap = {
   [TargetType in RelatableEntityType]:
     & {
@@ -851,7 +891,7 @@ export type Release<Include extends ReleaseInclude = never> = WithIncludes<
   Include
 >;
 
-/** All possible include parameter values for ReleaseGroup entities. */
+/** All possible include parameter values for Release Group entities. */
 export type ReleaseGroupInclude = CollectIncludes<$ReleaseGroup>;
 
 /** ReleaseGroup entity with additional data for the given include parameters. */
