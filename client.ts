@@ -54,7 +54,7 @@ export interface LookupOptions<Include> {
 /**
  * MusicBrainz API client.
  *
- * @example
+ * @example Lookup an artist and its relationships
  * ```ts
  * const client = new MusicBrainzClient();
  *
