@@ -17,17 +17,19 @@ export type $SubQuery<Data, RequiredInclude extends IncludeParameter> = {
 };
 
 /**
- * {@linkcode Entity} with additional information for the given include parameters.
+ * {@linkcode Data} with additional information for the given include parameters.
  *
  * Recursively unwraps the data and removes unavailable properties.
  */
 export type WithIncludes<
-  Entity extends object,
+  Data,
   Include extends IncludeParameter,
-> = Pick<
-  UnwrapProperties<Entity, Include>,
-  AvailableKeys<Entity, Include>
->;
+> = Data extends object ? Pick<
+    UnwrapProperties<Data, Include>,
+    AvailableKeys<Data, Include>
+  >
+  // Leave primitive values alone, there is nothing to unwrap.
+  : Data;
 
 /**
  * Keys of all properties which are included in {@linkcode Entity} for the given
@@ -83,11 +85,8 @@ type UnwrapData<Data, Include extends IncludeParameter> =
     : Data extends Array<infer Item>
     // Turn off distributivity to leave primitive union types alone.
       ? [Item] extends [string | number | undefined] ? Item[]
-      : Item extends object ? WithIncludes<Item, Include>[]
-      : Item[]
-    : Data extends object ? WithIncludes<Data, Include>
-    // Leave primitive values alone, there is nothing to unwrap.
-    : Data;
+      : WithIncludes<Item, Include>[]
+    : WithIncludes<Data, Include>;
 
 /**
  * All possible include parameter values for the given {@linkcode Entity}.
