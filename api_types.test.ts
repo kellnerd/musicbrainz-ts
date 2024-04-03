@@ -54,8 +54,9 @@ type IncludesHaveNoEffectOnPrimitiveArray = Expect<
 >;
 
 type ActivatedInclude<RequiredInclude extends string, Include extends string> =
-  RequiredInclude extends Include ? true : false;
+  ToEqual<RequiredInclude extends Include ? true : never, true>;
 type TestNoIncludeGiven = ExpectNot<ActivatedInclude<"A", never>>;
+type TestWrongIncludeGiven = ExpectNot<ActivatedInclude<"A", "X">>;
 type TestExactMatchInclude = Expect<ActivatedInclude<"A", "A">>;
 type TestExactMatchIncludeAndOthers = Expect<ActivatedInclude<"A", "A" | "X">>;
 type TestAllPossibleIncludes = Expect<ActivatedInclude<"A", string>>;
@@ -63,10 +64,10 @@ type TestFullMatchInclude = Expect<ActivatedInclude<"A" | "B", "A" | "B">>;
 type TestFullMatchIncludeAndOthers = Expect<
   ActivatedInclude<"A" | "B", "A" | "B" | "X">
 >;
-// The following two would fail in this minimal example, but WithIncludes works
-// nevertheless because of the distributive behavior of conditional types.
-type TestPartialMatchInclude = ActivatedInclude<"A" | "B", "A">;
-type TestPartialMatchIncludeAndOthers = ActivatedInclude<"A" | "B", "A" | "X">;
+type TestPartialMatchInclude = Expect<ActivatedInclude<"A" | "B", "A">>;
+type TestPartialMatchIncludeAndOthers = Expect<
+  ActivatedInclude<"A" | "B", "A" | "X">
+>;
 
 type RecordingHasACForArtistsInclude = Recording<"artists">["artist-credit"];
 
