@@ -1,6 +1,6 @@
 # MusicBrainz
 
-MusicBrainz API client which aims for fully typed results
+[MusicBrainz] [API] client which aims for fully typed results.
 
 ## Example
 
@@ -28,3 +28,6 @@ const members = group.relations
 
 console.log(members);
 ```
+
+[MusicBrainz]: https://musicbrainz.org/
+[API]: https://musicbrainz.org/doc/MusicBrainz_API

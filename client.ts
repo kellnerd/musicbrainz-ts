@@ -1,5 +1,8 @@
 /**
- * MusicBrainz API client which aims for fully typed results.
+ * [MusicBrainz] [API] client which aims for fully typed results.
+ *
+ * [MusicBrainz]: https://musicbrainz.org/
+ * [API]: https://musicbrainz.org/doc/MusicBrainz_API
  *
  * @module
  */
