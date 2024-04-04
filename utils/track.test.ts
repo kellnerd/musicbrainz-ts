@@ -1,6 +1,10 @@
 import { assertEquals } from "@std/assert/assert_equals";
 import { describe, it } from "@std/testing/bdd";
-import { parseTrackRange } from "@/utils/track.ts";
+import {
+  filterTrackRange,
+  parseTrackRange,
+  type TrackRange,
+} from "@/utils/track.ts";
 
 describe("parseTrackRange", () => {
   it("parses a numeric range", () => {
@@ -73,6 +77,56 @@ describe("parseTrackRange", () => {
       first: undefined,
       last: undefined,
       prefix: "",
+    });
+  });
+});
+
+describe("filterTrackRange", () => {
+  const trackTemplate = {
+    id: "",
+    length: null,
+    position: 0,
+    title: "",
+  };
+
+  function assertFilteredTrackRange(
+    numbers: string[],
+    expectedNumbers: string[],
+    range: TrackRange,
+  ) {
+    assertEquals(
+      filterTrackRange(
+        numbers.map((number) => ({ ...trackTemplate, number })),
+        range,
+      ).map((track) => track.number),
+      expectedNumbers,
+    );
+  }
+
+  const trackNumbers = ["1", "2", "3", "4"];
+  const vinylNumbers = ["A1", "A2", "A3", "B1", "B2", "B3"];
+
+  it("keeps all tracks for an explicit full range", () => {
+    assertFilteredTrackRange(trackNumbers, trackNumbers, {
+      first: "1",
+      last: "4",
+    });
+  });
+  it("keeps only tracks within the given numeric range", () => {
+    assertFilteredTrackRange(trackNumbers, ["2", "3"], {
+      first: "2",
+      last: "3",
+    });
+  });
+  it("keeps only tracks within the given alpha-numeric range", () => {
+    assertFilteredTrackRange(vinylNumbers, ["A3", "B1", "B2"], {
+      first: "A3",
+      last: "B2",
+    });
+  });
+  it("keeps only tracks with the given side prefix", () => {
+    assertFilteredTrackRange(vinylNumbers, ["B1", "B2", "B3"], {
+      prefix: "B",
     });
   });
 });

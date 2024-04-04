@@ -9,7 +9,7 @@ export type IncludeParameter = string;
  * responses if the {@linkcode RequiredInclude} parameter is specified.
  *
  * Types which are using this helper have to be unwrapped again before usage,
- * {@linkcode WithIncludes} or {@linkcode UnwrapProperties} will do this.
+ * {@linkcode WithIncludes} or {@linkcode Unwrap} will do this.
  */
 export type $SubQuery<Data, RequiredInclude extends IncludeParameter> = {
   readonly __inc__: RequiredInclude;
@@ -30,6 +30,9 @@ export type WithIncludes<
   >
   // Leave primitive values alone, there is nothing to unwrap.
   : Data;
+
+/** Recursively unwraps the data and removes all sub-query properties. */
+export type Unwrap<Data> = WithIncludes<Data, never>;
 
 /**
  * Keys of all properties which are included in {@linkcode Entity} for the given

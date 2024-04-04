@@ -1,3 +1,6 @@
+import type { MinimalTrack } from "@/api_types.ts";
+import type { Unwrap } from "@/api_includes.ts";
+
 /** Range of track numbers. */
 export interface TrackRange {
   /** Medium number/position. */
@@ -8,7 +11,7 @@ export interface TrackRange {
   last?: string;
   /**
    * Prefix of the track numbers in the range
-   * Mutually exclusive with {@linkcode first} and {@linkcode last} track number.
+   * Takes precedence over {@linkcode first} and {@linkcode last} track number.
    */
   prefix?: string;
 }
@@ -27,5 +30,29 @@ export function parseTrackRange(range: string): TrackRange {
     };
   } else {
     throw new TypeError("Invalid track range");
+  }
+}
+
+/** Filter the given tracks using a range of track numbers. */
+export function filterTrackRange<Track extends Unwrap<MinimalTrack>>(
+  tracks: Track[],
+  range: TrackRange,
+): Track[] {
+  const { prefix, first, last } = range;
+  if (prefix) {
+    return tracks.filter((track) => track.number.startsWith(prefix));
+  } else if (first) {
+    let inRange = false;
+    return tracks.filter((track) => {
+      if (inRange) {
+        if (track.number === last) inRange = false;
+        return true;
+      } else {
+        if (track.number === first) inRange = true;
+        return inRange;
+      }
+    });
+  } else {
+    return tracks;
   }
 }
