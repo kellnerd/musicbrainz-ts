@@ -1,6 +1,6 @@
 {
   "name": "@kellnerd/musicbrainz",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "exports": {
     ".": "./mod.ts",
     "./client": "./client.ts",
@@ -8,7 +8,9 @@
     "./data/entity": "./data/entity.ts",
     "./data/artist": "./data/artist.ts",
     "./data/release": "./data/release.ts",
-    "./data/release-group": "./data/release_group.ts"
+    "./data/release-group": "./data/release_group.ts",
+    "./utils/artist": "./utils/artist.ts",
+    "./utils/track": "./utils/track.ts"
   },
   "imports": {
     "@/": "./",
@@ -25,7 +27,7 @@
       ".github",
       ".vscode/",
       "test/",
-      "*.test.ts"
+      "**/*.test.ts"
     ]
   },
   "tasks": {
