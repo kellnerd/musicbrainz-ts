@@ -1,3 +1,9 @@
+/**
+ * Artist utilities.
+ *
+ * @module
+ */
+
 import type { ArtistCredit } from "@/api_types.ts";
 
 /** Combines the given artist credits into a string. */

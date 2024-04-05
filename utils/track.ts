@@ -1,3 +1,9 @@
+/**
+ * Track utilities.
+ *
+ * @module
+ */
+
 import type { MinimalTrack } from "@/api_types.ts";
 import type { Unwrap } from "@/api_includes.ts";
 
@@ -10,7 +16,7 @@ export interface TrackRange {
   /** Number of the last track in the range. */
   last?: string;
   /**
-   * Prefix of the track numbers in the range
+   * Prefix of the track numbers in the range.
    * Takes precedence over {@linkcode first} and {@linkcode last} track number.
    */
   prefix?: string;
@@ -33,7 +39,7 @@ export function parseTrackRange(range: string): TrackRange {
   }
 }
 
-/** Filter the given tracks using a range of track numbers. */
+/** Filters the given tracks using a range of track numbers. */
 export function filterTrackRange<Track extends Unwrap<MinimalTrack>>(
   tracks: Track[],
   range: TrackRange,
