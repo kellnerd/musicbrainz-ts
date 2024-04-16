@@ -122,7 +122,10 @@ export class MusicBrainzClient {
   }
 
   /** Performs a lookup request for the given entity. */
-  lookup<Type extends EntityType, Include extends EntityIncludeMap[Type]>(
+  lookup<
+    Type extends EntityType,
+    Include extends EntityIncludeMap[Type] = never,
+  >(
     entityType: Type,
     mbid: MBID,
     options: LookupOptions<Include> = {},
@@ -145,7 +148,7 @@ export class MusicBrainzClient {
   }
 
   /** Browses the Url entity for the given URL resource. */
-  browseUrl<Include extends UrlInclude>(
+  browseUrl<Include extends UrlInclude = never>(
     resource: URL,
     options: BrowseOptions<Include> = {},
   ): Promise<Url<Include>> {
