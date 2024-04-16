@@ -12,10 +12,10 @@ import type {
   CollectionWithContents,
   EntityIncludeMap,
   EntityTypeMap,
-  MBID,
   Url,
   UrlInclude,
 } from "./api_types.ts";
+import type { MBID } from "./common_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 import type { ReleaseStatus } from "./data/release.ts";

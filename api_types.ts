@@ -11,6 +11,14 @@ import type {
   PossibleRelTargetType,
   WithIncludes,
 } from "./api_includes.ts";
+import type {
+  IsoCountryCode,
+  IsoDate,
+  IsoLanguageCode,
+  IsoScriptCode,
+  Locale,
+  MBID,
+} from "./common_types.ts";
 import type { ArtistType, Gender } from "./data/artist.ts";
 import type {
   CollectableEntityType,
@@ -27,31 +35,6 @@ import type {
   ReleaseGroupSecondaryType,
 } from "./data/release_group.ts";
 import type { SnakeCase } from "./utils/type_utils.ts";
-
-/** MusicBrainz ID, a UUID (usually v4). */
-export type MBID = string;
-
-/** ISO 3166-1 (two letter), 3166-2 or 3166-3 (three letter) code of a country. */
-export type IsoCountryCode = string;
-
-/** ISO 639-3 (three letter) code of a language. */
-export type IsoLanguageCode = string;
-
-/** ISO 15924 (four letter) code of a script. */
-export type IsoScriptCode = string;
-
-/** ISO 8601 `YYYY-MM-DD` date, can be partial (`YYYY-MM` or `YYYY`). */
-export type IsoDate =
-  | `${number}-${number}-${number}`
-  | `${number}-${number}`
-  | `${number}`;
-
-/**
- * Language and optional territory and/or variant, separated by underscores:
- * - ISO 639 (two or three letters) language code
- * - ISO 3166-1 country code
- */
-export type Locale = string;
 
 /**
  * Maps entity type names to their type definitions.
@@ -553,7 +536,7 @@ export interface MinimalUrl extends EntityWithMbid {
 /** Internal Url entity (with sub-queries). */
 export interface $Url<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalUrl, WithRels<Include> {};
+> extends MinimalUrl, WithRels<Include> {}
 
 /** Minimal Work entity. */
 export interface MinimalWork extends MinimalEntity, WithType {

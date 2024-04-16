@@ -18,7 +18,6 @@ export type {
   InstrumentInclude,
   Label,
   LabelInclude,
-  MBID,
   Place,
   PlaceInclude,
   Recording,
