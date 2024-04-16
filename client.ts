@@ -13,6 +13,8 @@ import type {
   EntityIncludeMap,
   EntityTypeMap,
   MBID,
+  Url,
+  UrlInclude,
 } from "./api_types.ts";
 import { ApiError, isError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
@@ -52,6 +54,14 @@ export interface LookupOptions<Include> {
   status?: Lowercase<ReleaseStatus>[];
   /** Filter included release groups (and their releases) by type. */
   type?: Lowercase<ReleaseGroupType>[];
+}
+
+/** Options for a browse request. */
+export interface BrowseOptions<Include> extends LookupOptions<Include> {
+  /** Number of results per request (default is 25, maximum is 100). */
+  limit?: number;
+  /** Paging offset, to be used together with {@linkcode limit}. */
+  offset?: number;
 }
 
 /**
@@ -132,6 +142,21 @@ export class MusicBrainzClient {
   ): Promise<CollectionWithContents<ContentType>> {
     assertMbid(mbid);
     return this.get(["collection", mbid, entityPlural(contentType)].join("/"));
+  }
+
+  /** Browses the Url entity for the given URL resource. */
+  browseUrl<Include extends UrlInclude>(
+    resource: URL,
+    options: BrowseOptions<Include> = {},
+  ): Promise<Url<Include>> {
+    return this.get("url", {
+      resource: resource.href,
+      inc: options.inc?.join("+"),
+      status: options.status?.join("|"),
+      type: options.type?.join("|"),
+      limit: options.limit,
+      offset: options.offset,
+    });
   }
 
   /**
