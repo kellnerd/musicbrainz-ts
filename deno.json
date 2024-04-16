@@ -9,6 +9,7 @@
     "./data/artist": "./data/artist.ts",
     "./data/release": "./data/release.ts",
     "./data/release-group": "./data/release_group.ts",
+    "./seeding/release": "./seeding/release.ts",
     "./utils/artist": "./utils/artist.ts",
     "./utils/track": "./utils/track.ts"
   },
