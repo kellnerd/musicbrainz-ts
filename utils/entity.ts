@@ -9,7 +9,7 @@ import {
 
 /** Throws an error if the given input is not a valid MBID. */
 export function assertMbid(input: string): void {
-  return assert(validate(input), `${input} is not a valid MBID`);
+  return assert(validate(input), `"${input}" is not a valid MBID`);
 }
 
 /** Builds the plural form of the given entity type. */
