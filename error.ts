@@ -13,6 +13,17 @@ export class ApiError extends Error {
   }
 }
 
+/** Error which is thrown when there are too many API requests. */
+export class RateLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.defineProperty(this, "name", {
+      value: "RateLimitError",
+      enumerable: false,
+    });
+  }
+}
+
 /** Error response which is returned by the MusicBrainz `ws/2` JSON API. */
 export interface ErrorResponse {
   /** Error message with a description. */

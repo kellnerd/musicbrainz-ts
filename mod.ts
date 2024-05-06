@@ -1,5 +1,5 @@
 export * from "./client.ts";
-export { ApiError } from "./error.ts";
+export { ApiError, RateLimitError } from "./error.ts";
 export type {
   AnyInclude,
   Area,

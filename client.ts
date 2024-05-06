@@ -16,7 +16,7 @@ import type {
   UrlInclude,
 } from "./api_types.ts";
 import type { MBID } from "./common_types.ts";
-import { ApiError, isError } from "./error.ts";
+import { ApiError, isError, RateLimitError } from "./error.ts";
 import type { CollectableEntityType, EntityType } from "./data/entity.ts";
 import type { ReleaseStatus } from "./data/release.ts";
 import type { ReleaseGroupType } from "./data/release_group.ts";
@@ -34,6 +34,13 @@ export interface ClientOptions {
 
   /** Information about your application, will be used to fill the user-agent. */
   app?: AppInfo;
+
+  /**
+   * Maximum number of queued requests (optional, defaults to no limit).
+   *
+   * Excess requests will be rejected immediately.
+   */
+  maxQueueSize?: number;
 }
 
 /** Information about the client application. */
@@ -106,6 +113,7 @@ export class MusicBrainzClient {
    */
   constructor(options: ClientOptions = {}) {
     this.apiBaseUrl = options.apiUrl ?? "https://musicbrainz.org/ws/2/";
+    this.#maxQueueSize = options.maxQueueSize ?? Infinity;
 
     this.#headers = {
       "Accept": "application/json",
@@ -196,9 +204,17 @@ export class MusicBrainzClient {
   }
 
   async #request(url: URL, init?: RequestInit): Promise<Response> {
+    if (this.#queuedRequests >= this.#maxQueueSize) {
+      throw new RateLimitError(
+        "Too many requests queued, please wait and try again",
+      );
+    }
+
+    this.#queuedRequests++;
     await this.#rateLimitDelay;
 
     const response = await fetch(url, init);
+    this.#queuedRequests--;
 
     /** Number of API usage units remaining in the current time window. */
     const remainingUnits = response.headers.get("X-RateLimit-Remaining");
@@ -224,5 +240,7 @@ export class MusicBrainzClient {
   /** Base URL of the MusicBrainz API endpoints. */
   apiBaseUrl: string;
   #headers: HeadersInit;
+  #maxQueueSize: number;
+  #queuedRequests = 0;
   #rateLimitDelay = Promise.resolve();
 }
