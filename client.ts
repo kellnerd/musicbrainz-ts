@@ -75,6 +75,9 @@ export interface PagingOptions {
 export interface BrowseOptions<Include>
   extends LookupOptions<Include>, PagingOptions {}
 
+/** Options for a search request. */
+export interface SearchOptions extends PagingOptions {}
+
 /**
  * MusicBrainz API client.
  *
@@ -169,6 +172,17 @@ export class MusicBrainzClient {
       inc: options.inc?.join("+"),
       status: options.status?.join("|"),
       type: options.type?.join("|"),
+      limit: options.limit,
+      offset: options.offset,
+    });
+  }
+
+  searchRelease(
+    query: string,
+    options: SearchOptions = {},
+  ) {
+    return this.get("release", {
+      query: query,
       limit: options.limit,
       offset: options.offset,
     });
