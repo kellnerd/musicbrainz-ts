@@ -1,7 +1,8 @@
 import { resolve } from "@std/path/resolve";
 import { toPascalCase } from "@std/text/case";
-import type { AnyInclude, MBID } from "@/api_types.ts";
+import type { AnyInclude } from "@/api_types.ts";
 import { MusicBrainzClient } from "@/client.ts";
+import type { MBID } from "@/common_types.ts";
 import { isDefined } from "@/utils.ts";
 import type { EntityType } from "@/data/entity.ts";
 import { extractEntityFromUrl } from "@/utils/entity.ts";

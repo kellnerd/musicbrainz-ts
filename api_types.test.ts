@@ -1,9 +1,9 @@
-import {
+import type {
   AvailableKeys,
   CollectIncludes,
   WithIncludes,
 } from "@/api_includes.ts";
-import {
+import type {
   $ReleaseGroup,
   Area,
   MinimalReleaseGroup,
@@ -11,8 +11,8 @@ import {
   Relationship,
   ReleaseGroup,
 } from "@/api_types.ts";
-import { ReleaseGroupSecondaryType } from "@/data/release_group.ts";
-import { Expect, ExpectNot, ToEqual } from "@/utils/type_utils.ts";
+import type { ReleaseGroupSecondaryType } from "@/data/release_group.ts";
+import type { Expect, ExpectNot, ToEqual } from "@/utils/type_utils.ts";
 
 type WithAllIncludesToRemoveNoPropertyFrom<Entity extends object> = ToEqual<
   keyof Entity,
