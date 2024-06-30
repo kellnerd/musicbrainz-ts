@@ -63,13 +63,17 @@ export interface LookupOptions<Include> {
   type?: Lowercase<ReleaseGroupType>[];
 }
 
-/** Options for a browse request. */
-export interface BrowseOptions<Include> extends LookupOptions<Include> {
+/** Paging options for requests which return multiple results. */
+export interface PagingOptions {
   /** Number of results per request (default is 25, maximum is 100). */
   limit?: number;
   /** Paging offset, to be used together with {@linkcode limit}. */
   offset?: number;
 }
+
+/** Options for a browse request. */
+export interface BrowseOptions<Include>
+  extends LookupOptions<Include>, PagingOptions {}
 
 /**
  * MusicBrainz API client.
