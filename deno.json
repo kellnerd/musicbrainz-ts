@@ -35,6 +35,7 @@
   "tasks": {
     "build-docs": "deno doc --html --name=musicbrainz mod.ts client.ts api_types.ts data/entity.ts data/artist.ts data/release.ts data/release_group.ts",
     "load-testdata": "deno run --allow-net=musicbrainz.org --allow-write=test/data/ test/download_testdata.ts",
+    "update-type-data": "deno run --allow-net=musicbrainz.org --allow-read=. --allow-write=data data/_download_types.ts && deno fmt data",
     "test-types": "deno check test/data/*.ts"
   }
 }
