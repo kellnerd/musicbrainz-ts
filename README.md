@@ -2,6 +2,12 @@
 
 [MusicBrainz] [API] client which aims for fully typed results.
 
+> [!WARNING]
+> This library is still in development and does not support all API endpoints so far.
+> While most of them are trivial to implement in code, the type definitions are not.
+
+Please read the automatically generated [client documentation] to see which methods are supported.
+
 ## Example
 
 ```ts
@@ -31,3 +37,4 @@ console.log(members);
 
 [MusicBrainz]: https://musicbrainz.org/
 [API]: https://musicbrainz.org/doc/MusicBrainz_API
+[client documentation]: https://jsr.io/@kellnerd/musicbrainz/doc/client/~/MusicBrainzClient
