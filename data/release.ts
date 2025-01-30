@@ -11,6 +11,7 @@ export const statusTypeIds = {
   "Bootleg": 3,
   "Pseudo-Release": 4,
   "Withdrawn": 5,
+  "Expunged": 38,
   "Cancelled": 6,
 };
 
