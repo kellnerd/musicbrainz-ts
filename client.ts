@@ -159,19 +159,31 @@ export class MusicBrainzClient {
     return this.get(["collection", mbid, entityPlural(contentType)].join("/"));
   }
 
-  /** Browses the Url entity for the given URL resource. */
-  browseUrl<Include extends UrlInclude = never>(
+  /** Looks up the "url" entity for the given URL resource. */
+  lookupByUrl<Include extends UrlInclude = never>(
     resource: URL,
+    options?: BrowseOptions<Include>,
+  ): Promise<Url<Include>>;
+  /** Looks up the "url" entities for the given URL resources. */
+  lookupByUrl<Include extends UrlInclude = never>(
+    resource: URL[],
+    options?: BrowseOptions<Include>,
+  ): Promise<Url<Include>[]>;
+  lookupByUrl<Include extends UrlInclude = never>(
+    resource: URL | URL[],
     options: BrowseOptions<Include> = {},
-  ): Promise<Url<Include>> {
-    return this.get("url", {
-      resource: resource.href,
-      inc: options.inc?.join("+"),
-      status: options.status?.join("|"),
-      type: options.type?.join("|"),
-      limit: options.limit,
-      offset: options.offset,
-    });
+  ): Promise<Url<Include> | Url<Include>[]> {
+    if (!Array.isArray(resource)) {
+      resource = [resource];
+    }
+    return this.get("url", [
+      ["inc", options.inc?.join("+")],
+      ["status", options.status?.join("|")],
+      ["type", options.type?.join("|")],
+      ["limit", options.limit],
+      ["offset", options.offset],
+      ...resource.map<[string, string]>((url) => ["resource", url.href]),
+    ]);
   }
 
   /**
@@ -181,12 +193,15 @@ export class MusicBrainzClient {
    */
   async get(
     endpoint: string,
-    query?: Record<string, string | number | undefined>,
+    query?: Query<string | number | undefined>,
     // deno-lint-ignore no-explicit-any
   ): Promise<any> {
     const endpointUrl = new URL(endpoint, this.apiBaseUrl);
     if (query) {
-      const definedParams = Object.entries(query).filter(
+      if (!Array.isArray(query)) {
+        query = Object.entries(query);
+      }
+      const definedParams = query.filter(
         ([_key, value]) => value !== undefined,
       ) as string[][];
       // Hack above is needed to make TS accept query values of type `number`:
@@ -248,3 +263,8 @@ export class MusicBrainzClient {
   #queuedRequests = 0;
   #rateLimitDelay = Promise.resolve();
 }
+
+/** `URLSearchParams` compatible query parameters. */
+export type Query<T extends string | number | undefined = string> =
+  | Record<string, T>
+  | Array<[string, T]>;
