@@ -53,10 +53,14 @@ export interface AppInfo {
   contact?: string;
 }
 
-/** Options for a lookup request. */
-export interface LookupOptions<Include> {
+/** Include options for a lookup request. */
+export interface IncludeOptions<Include> {
   /** Include parameters to request additional data. */
   inc?: Include[];
+}
+
+/** Options for a lookup request. */
+export interface LookupOptions<Include> extends IncludeOptions<Include> {
   /** Filter included releases by their status. */
   status?: Lowercase<ReleaseStatus>[];
   /** Filter included release groups (and their releases) by type. */
@@ -162,26 +166,22 @@ export class MusicBrainzClient {
   /** Looks up the "url" entity for the given URL resource. */
   lookupByUrl<Include extends UrlInclude = never>(
     resource: URL,
-    options?: BrowseOptions<Include>,
+    options?: IncludeOptions<Include>,
   ): Promise<Url<Include>>;
   /** Looks up the "url" entities for the given URL resources. */
   lookupByUrl<Include extends UrlInclude = never>(
     resource: URL[],
-    options?: BrowseOptions<Include>,
+    options?: IncludeOptions<Include>,
   ): Promise<Url<Include>[]>;
   lookupByUrl<Include extends UrlInclude = never>(
     resource: URL | URL[],
-    options: BrowseOptions<Include> = {},
+    options: IncludeOptions<Include> = {},
   ): Promise<Url<Include> | Url<Include>[]> {
     if (!Array.isArray(resource)) {
       resource = [resource];
     }
     return this.get("url", [
       ["inc", options.inc?.join("+")],
-      ["status", options.status?.join("|")],
-      ["type", options.type?.join("|")],
-      ["limit", options.limit],
-      ["offset", options.offset],
       ...resource.map<[string, string]>((url) => ["resource", url.href]),
     ]);
   }
