@@ -30,7 +30,7 @@ export interface ClientOptions {
    * Useful to test with the beta server or a custom server.
    * @default "https://musicbrainz.org/ws/2/"
    */
-  apiUrl?: string;
+  apiUrl?: URL | string;
 
   /** Information about your application, will be used to fill the user-agent. */
   app?: AppInfo;
@@ -120,7 +120,9 @@ export class MusicBrainzClient {
    * ```
    */
   constructor(options: ClientOptions = {}) {
-    this.apiBaseUrl = options.apiUrl ?? "https://musicbrainz.org/ws/2/";
+    this.apiBaseUrl = new URL(
+      options.apiUrl ?? "https://musicbrainz.org/ws/2/",
+    );
     this.#maxQueueSize = options.maxQueueSize ?? Infinity;
 
     this.#headers = {
@@ -268,7 +270,7 @@ export class MusicBrainzClient {
   }
 
   /** Base URL of the MusicBrainz API endpoints. */
-  apiBaseUrl: string;
+  apiBaseUrl: URL;
   #headers: HeadersInit;
   #maxQueueSize: number;
   #queuedRequests = 0;
