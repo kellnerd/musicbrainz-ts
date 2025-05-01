@@ -173,17 +173,28 @@ export class MusicBrainzClient {
     resource: URL[],
     options?: IncludeOptions<Include>,
   ): Promise<Url<Include>[]>;
-  lookupByUrl<Include extends UrlInclude = never>(
+  async lookupByUrl<Include extends UrlInclude = never>(
     resource: URL | URL[],
     options: IncludeOptions<Include> = {},
   ): Promise<Url<Include> | Url<Include>[]> {
+    const inputIsArray = Array.isArray(resource);
     if (!Array.isArray(resource)) {
       resource = [resource];
+    } else if (resource.length === 0) {
+      return [];
     }
-    return this.get("url", [
+    // Result can be either an `Url` object for a single requested resource, or
+    // it contains an `urls` array when multiple resources were specified.
+    const result: Url<Include> | UrlResults<Include> = await this.get("url", [
       ["inc", options.inc?.join("+")],
       ...resource.map<[string, string]>((url) => ["resource", url.href]),
     ]);
+    if ("urls" in result) {
+      return result.urls;
+    } else {
+      // Output an array if the input was an array.
+      return inputIsArray ? [result] : result;
+    }
   }
 
   /**
@@ -268,3 +279,9 @@ export class MusicBrainzClient {
 export type Query<T extends string | number | undefined = string> =
   | Record<string, T>
   | Array<[string, T]>;
+
+interface UrlResults<Include extends UrlInclude> {
+  "urls": Url<Include>[];
+  "url-count": number;
+  "url-offset": number;
+}
