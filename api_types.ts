@@ -476,6 +476,8 @@ export interface $Release<
 export interface ReleaseGroupBase extends MinimalEntity {
   /** Title of the release group. */
   title: string;
+  /** The artist(s) that the release group is primarily credited to. */
+  "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   /** Primary type of the release group. */
   "primary-type": ReleaseGroupPrimaryType | null;
   /** MBID of the {@linkcode primary-type}. */
@@ -493,10 +495,6 @@ export interface ReleaseGroupBase extends MinimalEntity {
 
 /** Minimal Release Group entity. */
 export interface MinimalReleaseGroup extends ReleaseGroupBase {
-  /** The artist(s) that the release group is primarily credited to. */
-  "artist-credit":
-    | $SubQuery<ArtistCredit[], "artist-credits">
-    | $SubQuery<null, "artists">; // probably a bug in the MBS serializer
   releases: $SubQuery<[], "releases">; // always empty for nested release groups
 }
 
@@ -510,8 +508,6 @@ export interface MinimalReleaseGroupWithRels extends MinimalReleaseGroup {
 export interface $ReleaseGroup<
   Include extends IncludeParameter = IncludeParameter,
 > extends ReleaseGroupBase, WithAnnotation, WithRels<Include> {
-  /** The artist(s) that the release group is primarily credited to. */
-  "artist-credit": $SubQuery<ArtistCredit[], "artists" | "artist-credits">;
   /** Releases which belong to this release group. */
   releases: $SubQuery<MinimalRelease[], "releases">;
 }
