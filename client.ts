@@ -245,8 +245,12 @@ export class MusicBrainzClient {
     this.#queuedRequests++;
     await this.#rateLimitDelay;
 
-    const response = await fetch(url, init);
-    this.#queuedRequests--;
+    let response: Response;
+    try {
+      response = await fetch(url, init);
+    } finally {
+      this.#queuedRequests--;
+    }
 
     /** Number of API usage units remaining in the current time window. */
     const remainingUnits = response.headers.get("X-RateLimit-Remaining");
