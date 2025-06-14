@@ -185,17 +185,28 @@ export class MusicBrainzClient {
     } else if (resource.length === 0) {
       return [];
     }
-    // Result can be either an `Url` object for a single requested resource, or
-    // it contains an `urls` array when multiple resources were specified.
-    const result: Url<Include> | UrlResults<Include> = await this.get("url", [
-      ["inc", options.inc?.join("+")],
-      ...resource.map<[string, string]>((url) => ["resource", url.href]),
-    ]);
-    if ("urls" in result) {
-      return result.urls;
-    } else {
-      // Output an array if the input was an array.
-      return inputIsArray ? [result] : result;
+    try {
+      // Result can be either an `Url` object for a single requested resource, or
+      // it contains an `urls` array when multiple resources were specified.
+      const result: Url<Include> | UrlResults<Include> = await this.get("url", [
+        ["inc", options.inc?.join("+")],
+        ...resource.map<[string, string]>((url) => ["resource", url.href]),
+      ]);
+      if ("urls" in result) {
+        return result.urls;
+      } else {
+        // Output an array if the input was an array.
+        return inputIsArray ? [result] : result;
+      }
+    } catch (error) {
+      // The API may return a Not Found error for a single requested resource.
+      if (error instanceof ApiError && error.statusCode === 404) {
+        // Output an empty array if the input was a (single-element-)array.
+        if (inputIsArray) {
+          return [];
+        }
+      }
+      throw error;
     }
   }
 
