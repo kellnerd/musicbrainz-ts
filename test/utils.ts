@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert/assert_equals";
+import { assertEquals } from "@std/assert/equals";
 
 /**
  * Returns a function which asserts whether the given function returns the

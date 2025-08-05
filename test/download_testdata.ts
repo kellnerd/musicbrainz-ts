@@ -1,5 +1,5 @@
 import { resolve } from "@std/path/resolve";
-import { toPascalCase } from "@std/text/case";
+import { toPascalCase } from "@std/text/to-pascal-case";
 import type { AnyInclude } from "@/api_types.ts";
 import { MusicBrainzClient } from "@/client.ts";
 import type { MBID } from "@/common_types.ts";

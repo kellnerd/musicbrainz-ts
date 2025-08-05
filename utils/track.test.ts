@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert/assert_equals";
+import { assertEquals } from "@std/assert/equals";
 import { describe, it } from "@std/testing/bdd";
 import {
   filterTrackRange,
