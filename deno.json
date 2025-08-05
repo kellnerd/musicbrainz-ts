@@ -21,7 +21,7 @@
     "@std/path": "jsr:@std/path@^0.220.1",
     "@std/testing": "jsr:@std/testing@^0.220.1",
     "@std/text": "jsr:@std/text@^0.220.1",
-    "@std/uuid": "jsr:@std/uuid@^0.220.1"
+    "@std/uuid": "jsr:@std/uuid@^1.0.0"
   },
   "lock": false,
   "publish": {

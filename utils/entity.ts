@@ -1,5 +1,5 @@
 import { assert } from "@std/assert/assert";
-import { validate } from "@std/uuid";
+import { validate } from "@std/uuid/common";
 import type { MBID } from "@/common_types.ts";
 import {
   type EntityPlural,
