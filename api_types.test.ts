@@ -6,10 +6,13 @@ import type {
 import type {
   $ReleaseGroup,
   Area,
+  DatePeriod,
+  Event,
   MinimalReleaseGroup,
   Recording,
   Relationship,
   ReleaseGroup,
+  Series,
 } from "@/api_types.ts";
 import type { ReleaseGroupSecondaryType } from "@/data/release_group.ts";
 import type { Expect, ExpectNot, ToEqual } from "@/utils/type_utils.ts";
@@ -17,6 +20,20 @@ import type { Expect, ExpectNot, ToEqual } from "@/utils/type_utils.ts";
 type WithAllIncludesToRemoveNoPropertyFrom<Entity extends object> = ToEqual<
   keyof Entity,
   AvailableKeys<Entity, string>
+>;
+
+type RelatedEventHasDates = Expect<
+  ToEqual<
+    Event<"event-rels">["relations"][number]["event"]["life-span"],
+    DatePeriod
+  >
+>;
+
+type SeriesEventHasDates = Expect<
+  ToEqual<
+    Series<"event-rels">["relations"][number]["event"]["life-span"],
+    DatePeriod
+  >
 >;
 type TestReleaseGroupWithAllIncludes = Expect<
   WithAllIncludesToRemoveNoPropertyFrom<$ReleaseGroup>
