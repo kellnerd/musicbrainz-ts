@@ -287,15 +287,14 @@ export interface MinimalEvent extends MinimalEntity, WithType {
   setlist: string;
   /** Indicates whether the event took place or not. */
   cancelled: boolean;
+  /** Indicates when the event started and finished. */
+  "life-span": DatePeriod;
 }
 
 /** Internal Event entity (with sub-queries). */
 export interface $Event<
   Include extends IncludeParameter = IncludeParameter,
-> extends MinimalEvent, WithAnnotation, WithRels<Include> {
-  /** Indicates when the event started and finished. */
-  "life-span": DatePeriod;
-}
+> extends MinimalEvent, WithAnnotation, WithRels<Include> {}
 
 /** Internal Genre entity. */
 export interface $Genre extends EntityWithMbid {
